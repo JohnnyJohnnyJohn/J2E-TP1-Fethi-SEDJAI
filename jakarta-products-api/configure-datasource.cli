@@ -1,0 +1,26 @@
+embed-server --std-out=echo
+
+batch
+
+/subsystem=datasources/jdbc-driver=postgresql:add( \
+    driver-name=postgresql, \
+    driver-module-name=org.postgresql, \
+    driver-class-name=org.postgresql.Driver \
+)
+
+/subsystem=datasources/data-source=ProductsDS:add( \
+    jndi-name=java:jboss/datasources/ProductsDS, \
+    driver-name=postgresql, \
+    connection-url=jdbc:postgresql://${env.DB_HOST:postgres}:${env.DB_PORT:5432}/${env.DB_NAME:productsdb}, \
+    user-name=${env.DB_USER:products}, \
+    password=${env.DB_PASSWORD:products123}, \
+    min-pool-size=2, \
+    max-pool-size=10, \
+    enabled=true, \
+    use-java-context=true, \
+    jta=true \
+)
+
+run-batch
+
+stop-embedded-server

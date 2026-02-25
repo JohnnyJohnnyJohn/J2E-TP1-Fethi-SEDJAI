@@ -1,0 +1,47 @@
+services:
+  wildfly:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jakarta-products-api
+    ports:
+      - "8080:8080"
+      - "9990:9990"
+    environment:
+      - JAVA_OPTS=-Xms256m -Xmx512m
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=productsdb
+      - DB_USER=products
+      - DB_PASSWORD=products123
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - products-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: products-db-jakarta
+    environment:
+      POSTGRES_DB: productsdb
+      POSTGRES_USER: products
+      POSTGRES_PASSWORD: products123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U products -d productsdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - products-network
+
+networks:
+  products-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
