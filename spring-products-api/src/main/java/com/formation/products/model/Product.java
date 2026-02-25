@@ -1,7 +1,10 @@
 package com.formation.products.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.formation.products.validation.ValidPrice;
+import com.formation.products.validation.ValidSKU;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -25,17 +28,29 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Le nom du produit est obligatoire")
+    @Size(min = 2, max = 200, message = "Le nom doit contenir entre {min} et {max} caractères")
     @Column(nullable = false, length = 200)
     private String name;
 
+    @Size(max = 1000, message = "La description ne peut pas dépasser {max} caractères")
     @Column(length = 1000)
     private String description;
 
+    @NotNull(message = "Le prix est obligatoire")
+    @DecimalMin(value = "0.01", message = "Le prix doit être d'au moins 0.01")
+    @Digits(integer = 8, fraction = 2, message = "Le prix doit avoir au maximum 8 chiffres entiers et 2 décimales")
+    @ValidPrice
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
+    @Min(value = 0, message = "Le stock ne peut pas être négatif")
     @Column(nullable = false)
     private int stock;
+
+    @ValidSKU
+    @Column(unique = true, length = 10)
+    private String sku;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
@@ -134,6 +149,14 @@ public class Product {
 
     public void setSupplier(Supplier supplier) {
         this.supplier = supplier;
+    }
+
+    public String getSku() {
+        return sku;
+    }
+
+    public void setSku(String sku) {
+        this.sku = sku;
     }
 
     public LocalDateTime getCreatedAt() {

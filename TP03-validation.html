@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>TP3 &colon; Validation et Gestion des Erreurs</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+/* From extension jebbs.markdown-extended */
+@font-face {
+  font-family: "Material Icons";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Material Icons"), local("MaterialIcons-Regular"), url("data:application/x-font-woff;charset=utf-8;base64,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") format("woff");
+}
+
+.admonition {
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12), 0 3px 1px -2px rgba(0, 0, 0, .2);
+  position: relative;
+  margin: 1.5625em 0;
+  padding: 0 1.2rem;
+  border-left: .4rem solid rgba(68, 138, 255, .8);
+  border-radius: .2rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  overflow: auto;
+}
+
+.admonition>p {
+  margin-top: .8rem;
+}
+
+.admonition>.admonition-title {
+  margin: 0 -1.2rem;
+  padding: .8rem 1.2rem .8rem 3.6rem;
+  border-bottom: 1px solid rgba(68, 138, 255, .2);
+  background-color: rgba(68, 138, 255, .1);
+  font-weight: 700;
+}
+
+.admonition>.admonition-title:before {
+  position: absolute;
+  left: 1.2rem;
+  font-size: 1.5rem;
+  color: rgba(68, 138, 255, .8);
+  content: "\E3C9";
+}
+
+.admonition>.admonition-title:before {
+  font-family: Material Icons;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: 400;
+  line-height: 2rem;
+  text-transform: none;
+  white-space: nowrap;
+  speak: none;
+  word-wrap: normal;
+  direction: ltr;
+}
+
+.admonition.summary,
+.admonition.abstract,
+.admonition.tldr {
+  border-left-color: rgba(0, 176, 255, .8);
+}
+
+.admonition.summary>.admonition-title,
+.admonition.abstract>.admonition-title,
+.admonition.tldr>.admonition-title {
+  background-color: rgba(0, 176, 255, .1);
+  border-bottom-color: rgba(0, 176, 255, .2);
+}
+
+.admonition.summary>.admonition-title:before,
+.admonition.abstract>.admonition-title:before,
+.admonition.tldr>.admonition-title:before {
+  color: rgba(0, 176, 255, 1);
+  ;
+  content: "\E8D2";
+}
+
+.admonition.hint,
+.admonition.tip {
+  border-left-color: rgba(0, 191, 165, .8);
+}
+
+.admonition.hint>.admonition-title,
+.admonition.tip>.admonition-title {
+  background-color: rgba(0, 191, 165, .1);
+  border-bottom-color: rgba(0, 191, 165, .2);
+}
+
+.admonition.hint>.admonition-title:before,
+.admonition.tip>.admonition-title:before {
+  color: rgba(0, 191, 165, 1);
+  content: "\E80E";
+}
+
+.admonition.info,
+.admonition.todo {
+  border-left-color: rgba(0, 184, 212, .8);
+}
+
+.admonition.info>.admonition-title,
+.admonition.todo>.admonition-title {
+  background-color: rgba(0, 184, 212, .1);
+  border-bottom-color: rgba(0, 184, 212, .2);
+}
+
+.admonition.info>.admonition-title:before,
+.admonition.todo>.admonition-title:before {
+  color: rgba(0, 184, 212, 1);
+  ;
+  content: "\E88E";
+}
+
+.admonition.success,
+.admonition.check,
+.admonition.done {
+  border-left-color: rgba(0, 200, 83, .8);
+}
+
+.admonition.success>.admonition-title,
+.admonition.check>.admonition-title,
+.admonition.done>.admonition-title {
+  background-color: rgba(0, 200, 83, .1);
+  border-bottom-color: rgba(0, 200, 83, .2);
+}
+
+.admonition.success>.admonition-title:before,
+.admonition.check>.admonition-title:before,
+.admonition.done>.admonition-title:before {
+  color: rgba(0, 200, 83, 1);
+  ;
+  content: "\E876";
+}
+
+.admonition.question,
+.admonition.help,
+.admonition.faq {
+  border-left-color: rgba(100, 221, 23, .8);
+}
+
+.admonition.question>.admonition-title,
+.admonition.help>.admonition-title,
+.admonition.faq>.admonition-title {
+  background-color: rgba(100, 221, 23, .1);
+  border-bottom-color: rgba(100, 221, 23, .2);
+}
+
+.admonition.question>.admonition-title:before,
+.admonition.help>.admonition-title:before,
+.admonition.faq>.admonition-title:before {
+  color: rgba(100, 221, 23, 1);
+  ;
+  content: "\E887";
+}
+
+.admonition.warning,
+.admonition.attention,
+.admonition.caution {
+  border-left-color: rgba(255, 145, 0, .8);
+}
+
+.admonition.warning>.admonition-title,
+.admonition.attention>.admonition-title,
+.admonition.caution>.admonition-title {
+  background-color: rgba(255, 145, 0, .1);
+  border-bottom-color: rgba(255, 145, 0, .2);
+}
+
+.admonition.attention>.admonition-title:before {
+  color: rgba(255, 145, 0, 1);
+  content: "\E417";
+}
+
+.admonition.warning>.admonition-title:before,
+.admonition.caution>.admonition-title:before {
+  color: rgba(255, 145, 0, 1);
+  content: "\E002";
+}
+
+.admonition.failure,
+.admonition.fail,
+.admonition.missing {
+  border-left-color: rgba(255, 82, 82, .8);
+}
+
+.admonition.failure>.admonition-title,
+.admonition.fail>.admonition-title,
+.admonition.missing>.admonition-title {
+  background-color: rgba(255, 82, 82, .1);
+  border-bottom-color: rgba(255, 82, 82, .2);
+}
+
+.admonition.failure>.admonition-title:before,
+.admonition.fail>.admonition-title:before,
+.admonition.missing>.admonition-title:before {
+  color: rgba(255, 82, 82, 1);
+  ;
+  content: "\E14C";
+}
+
+.admonition.danger,
+.admonition.error,
+.admonition.bug {
+  border-left-color: rgba(255, 23, 68, .8);
+}
+
+.admonition.danger>.admonition-title,
+.admonition.error>.admonition-title,
+.admonition.bug>.admonition-title {
+  background-color: rgba(255, 23, 68, .1);
+  border-bottom-color: rgba(255, 23, 68, .2);
+}
+
+.admonition.danger>.admonition-title:before {
+  color: rgba(255, 23, 68, 1);
+  content: "\E3E7";
+}
+
+.admonition.error>.admonition-title:before {
+  color: rgba(255, 23, 68, 1);
+  content: "\E14C";
+}
+
+.admonition.bug>.admonition-title:before {
+  color: rgba(255, 23, 68, 1);
+  content: "\E868";
+}
+
+.admonition.example,
+.admonition.snippet {
+  border-left-color: rgba(0, 184, 212, .8);
+}
+
+.admonition.example>.admonition-title,
+.admonition.snippet>.admonition-title {
+  background-color: rgba(0, 184, 212, .1);
+  border-bottom-color: rgba(0, 184, 212, .2);
+}
+
+.admonition.example>.admonition-title:before,
+.admonition.snippet>.admonition-title:before {
+  color: rgba(0, 184, 212, 1);
+  ;
+  content: "\E242";
+}
+
+.admonition.quote,
+.admonition.cite {
+  border-left-color: rgba(158, 158, 158, .8);
+}
+
+.admonition.quote>.admonition-title,
+.admonition.cite>.admonition-title {
+  background-color: rgba(158, 158, 158, .1);
+  border-bottom-color: rgba(158, 158, 158, .2);
+}
+
+.admonition.quote>.admonition-title:before,
+.admonition.cite>.admonition-title:before {
+  color: rgba(158, 158, 158, 1);
+  ;
+  content: "\E244";
+}
+.vscode-light kbd,
+.vscode-dark kbd,
+.vscode-high-contrast kbd {
+  display: inline-block;
+  padding: 3px 5px;
+  font: 11px "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  line-height: 10px;
+  vertical-align: middle;
+  border: solid 1px #d1d5da;
+  border-bottom-color: #c6cbd1;
+  border-radius: 3px;
+  box-shadow: inset 0 -1px 0 #c6cbd1;
+}
+
+.vscode-light kbd {
+  color: #444d56;
+  background-color: #fafbfc;
+}
+</style>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <h1 id="tp3--validation-et-gestion-des-erreurs">TP3 : Validation et Gestion des Erreurs</h1>
+<p><strong>Durée estimée</strong> : 2 × 1h30 = 3h00
+<strong>Niveau</strong> : Intermédiaire
+<strong>Prérequis</strong> : TP1-2 complétés, Cours 4 sur la Validation</p>
+<hr>
+<h2 id="choix-du-framework">Choix du Framework</h2>
+<p>Ce TP se réalise <strong>dans le framework que vous avez utilisé lors du TP1/TP2</strong> : soit <strong>Jakarta EE (JAX-RS)</strong>, soit <strong>Spring Boot (Spring MVC)</strong>.</p>
+<p>Les parties 1, 2, 3 et 6 sont <strong>communes aux deux frameworks</strong>.
+La partie 4 est <strong>réservée Jakarta EE</strong>.
+La partie 5 est <strong>réservée Spring Boot</strong>.</p>
+<blockquote>
+<p>Vous n'avez à réaliser <strong>qu'une seule</strong> des deux parties 4 ou 5, selon votre framework.</p>
+</blockquote>
+<hr>
+<h2 id="objectifs-du-tp">Objectifs du TP</h2>
+<p>À l'issue de ce TP, vous serez capable de :</p>
+<ul>
+<li>Ajouter Bean Validation sur vos entités JPA</li>
+<li>Créer des contraintes de validation personnalisées</li>
+<li><strong>[Jakarta EE]</strong> Implémenter des Exception Mappers (JAX-RS)</li>
+<li><strong>[Spring Boot]</strong> Implémenter un <code>@ControllerAdvice</code> (Spring MVC)</li>
+<li>Retourner des réponses d'erreur structurées</li>
+<li>Tester systématiquement les cas d'erreur</li>
+</ul>
+<hr>
+<h2 id="contexte">Contexte</h2>
+<p>Vous allez renforcer la robustesse de votre API de gestion de produits en ajoutant une validation complète et une gestion structurée des erreurs. Actuellement, votre API fonctionne mais n'est pas protégée contre les données invalides.</p>
+<p><strong>Problèmes à résoudre</strong> :</p>
+<ul>
+<li>Aucune validation → données corrompues possibles</li>
+<li>Exceptions non gérées → 500 avec stack traces</li>
+<li>Messages d'erreur non structurés</li>
+<li>Expérience client médiocre en cas d'erreur</li>
+</ul>
+<hr>
+<h2 id="architecture-cible">Architecture Cible</h2>
+<h3 id="jakarta-ee">Jakarta EE</h3>
+<pre><code>src/main/java/com/formation/products/
+├── model/
+│   ├── Product.java (+ Bean Validation)
+│   ├── Category.java (+ Bean Validation)
+│   ├── Order.java (+ Bean Validation)
+│   └── OrderItem.java (+ Bean Validation)
+│
+├── validation/ (NOUVEAU)
+│   ├── ValidSKU.java (annotation)
+│   ├── ValidSKUValidator.java
+│   ├── ValidPrice.java
+│   ├── ValidPriceValidator.java
+│   └── ValidDateRange.java
+│
+├── exception/ (NOUVEAU)
+│   ├── ErrorResponse.java
+│   ├── FieldError.java
+│   ├── ProductNotFoundException.java
+│   ├── DuplicateProductException.java
+│   └── InsufficientStockException.java
+│
+├── mapper/ (NOUVEAU)
+│   ├── ValidationExceptionMapper.java
+│   ├── NotFoundExceptionMapper.java
+│   ├── ConflictExceptionMapper.java
+│   └── GenericExceptionMapper.java
+│
+└── [... reste inchangé]
+</code></pre>
+<h3 id="spring-boot">Spring Boot</h3>
+<pre><code>src/main/java/com/formation/products/
+├── model/
+│   ├── Product.java (+ Bean Validation)
+│   ├── Category.java (+ Bean Validation)
+│   ├── Order.java (+ Bean Validation)
+│   └── OrderItem.java (+ Bean Validation)
+│
+├── validation/ (NOUVEAU)
+│   ├── ValidSKU.java (annotation)
+│   ├── ValidSKUValidator.java
+│   ├── ValidPrice.java
+│   ├── ValidPriceValidator.java
+│   └── ValidDateRange.java
+│
+├── exception/ (NOUVEAU)
+│   ├── ErrorResponse.java
+│   ├── FieldError.java
+│   ├── ProductNotFoundException.java
+│   ├── DuplicateProductException.java
+│   └── InsufficientStockException.java
+│
+├── handler/ (NOUVEAU)
+│   └── GlobalExceptionHandler.java (@ControllerAdvice)
+│
+└── [... reste inchangé]
+</code></pre>
+<hr>
+<h2 id="partie-1--bean-validation-sur-les-entités-30-min">Partie 1 : Bean Validation sur les Entités (30 min)</h2>
+<blockquote>
+<p><strong>Commun aux deux frameworks</strong></p>
+</blockquote>
+<h3 id="objectif">Objectif</h3>
+<p>Ajouter des contraintes de validation déclaratives sur toutes les entités</p>
+<h3 id="11-validation-de-product">1.1 Validation de Product</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Modifiez <code>Product.java</code> pour ajouter les contraintes :</p>
+<p><strong>Champs à valider</strong> :</p>
+<ul>
+<li>
+<p><code>name</code> :</p>
+<ul>
+<li><code>@NotBlank</code> : obligatoire</li>
+<li><code>@Size(min = 2, max = 200)</code> : longueur</li>
+</ul>
+</li>
+<li>
+<p><code>description</code> :</p>
+<ul>
+<li><code>@Size(max = 1000)</code> : longueur maximale (optionnel)</li>
+</ul>
+</li>
+<li>
+<p><code>price</code> :</p>
+<ul>
+<li><code>@NotNull</code> : obligatoire</li>
+<li><code>@DecimalMin(value = &quot;0.01&quot;)</code> : minimum 1 centime</li>
+<li><code>@Digits(integer = 8, fraction = 2)</code> : format monétaire</li>
+</ul>
+</li>
+<li>
+<p><code>stock</code> :</p>
+<ul>
+<li><code>@NotNull</code></li>
+<li><code>@Min(0)</code> : pas de stock négatif</li>
+</ul>
+</li>
+<li>
+<p><code>category</code> :</p>
+<ul>
+<li><code>@NotNull</code> : obligatoire</li>
+</ul>
+</li>
+<li>
+<p><code>sku</code> (nouveau champ String) :</p>
+<ul>
+<li>Format: 3 lettres + 3 chiffres (ex: ABC123)</li>
+<li>Vous créerez une contrainte custom <code>@ValidSKU</code></li>
+</ul>
+</li>
+</ul>
+<p><strong>Messages personnalisés</strong> :</p>
+<p>Utilisez l'attribut <code>message</code> pour des messages clairs en français :</p>
+<pre><code class="language-java"><span class="hljs-meta">@NotBlank(message = &quot;Le nom du produit est obligatoire&quot;)</span>
+<span class="hljs-meta">@Size(min = 2, max = 200, message = &quot;Le nom doit contenir entre {min} et {max} caractères&quot;)</span>
+<span class="hljs-keyword">private</span> String name;
+</code></pre>
+<h3 id="12-validation-de-category">1.2 Validation de Category</h3>
+<p><strong>Consignes</strong> :</p>
+<ul>
+<li><code>name</code> : <code>@NotBlank</code>, <code>@Size(min = 2, max = 100)</code>, <code>@Column(unique = true)</code></li>
+<li><code>description</code> : <code>@Size(max = 500)</code></li>
+</ul>
+<h3 id="13-validation-de-order">1.3 Validation de Order</h3>
+<p><strong>Consignes</strong> :</p>
+<ul>
+<li><code>customerName</code> : <code>@NotBlank</code>, <code>@Size(min = 2, max = 100)</code></li>
+<li><code>customerEmail</code> : <code>@NotBlank</code>, <code>@Email</code></li>
+<li><code>status</code> : <code>@NotNull</code></li>
+<li><code>totalAmount</code> : <code>@NotNull</code>, <code>@DecimalMin(&quot;0.01&quot;)</code></li>
+<li><code>orderDate</code> : <code>@PastOrPresent</code></li>
+<li><code>items</code> : <code>@NotEmpty</code> (au moins un item)</li>
+</ul>
+<h3 id="14-validation-de-orderitem">1.4 Validation de OrderItem</h3>
+<p><strong>Consignes</strong> :</p>
+<ul>
+<li><code>product</code> : <code>@NotNull</code></li>
+<li><code>quantity</code> : <code>@NotNull</code>, <code>@Min(1)</code>, <code>@Max(1000)</code></li>
+<li><code>unitPrice</code> : <code>@NotNull</code>, <code>@DecimalMin(&quot;0.01&quot;)</code></li>
+</ul>
+<h3 id="15-tests-de-validation">1.5 Tests de Validation</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Testez la validation avec des données invalides :</p>
+<p><strong>Via les endpoints</strong> :</p>
+<pre><code class="language-bash"><span class="hljs-comment"># Test 1 : Nom vide</span>
+POST /api/products
+{
+  <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;&quot;</span>,
+  <span class="hljs-string">&quot;price&quot;</span>: 100
+}
+<span class="hljs-comment"># Attendu : 400 avec message &quot;Le nom est obligatoire&quot;</span>
+
+<span class="hljs-comment"># Test 2 : Prix négatif</span>
+POST /api/products
+{
+  <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Laptop&quot;</span>,
+  <span class="hljs-string">&quot;price&quot;</span>: -10
+}
+<span class="hljs-comment"># Attendu : 400 avec message sur le prix</span>
+
+<span class="hljs-comment"># Test 3 : Email invalide</span>
+POST /api/orders
+{
+  <span class="hljs-string">&quot;customerName&quot;</span>: <span class="hljs-string">&quot;John&quot;</span>,
+  <span class="hljs-string">&quot;customerEmail&quot;</span>: <span class="hljs-string">&quot;pas-un-email&quot;</span>
+}
+<span class="hljs-comment"># Attendu : 400 avec message sur l&#x27;email</span>
+</code></pre>
+<p><strong>Livrable 1</strong> : Captures Thunder Client montrant les erreurs de validation</p>
+<hr>
+<h2 id="partie-2--contraintes-personnalisées-25-min">Partie 2 : Contraintes Personnalisées (25 min)</h2>
+<blockquote>
+<p><strong>Commun aux deux frameworks</strong></p>
+</blockquote>
+<h3 id="objectif-1">Objectif</h3>
+<p>Créer des validations custom pour les règles métier spécifiques</p>
+<h3 id="21-contrainte-validsku">2.1 Contrainte @ValidSKU</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Créez <code>validation/ValidSKU.java</code> :</p>
+<pre><code class="language-java"><span class="hljs-meta">@Target({ElementType.FIELD, ElementType.PARAMETER})</span>
+<span class="hljs-meta">@Retention(RetentionPolicy.RUNTIME)</span>
+<span class="hljs-meta">@Constraint(validatedBy = ValidSKUValidator.class)</span>
+<span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> ValidSKU {
+    String <span class="hljs-title function_">message</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> <span class="hljs-string">&quot;SKU invalide. Format attendu: ABC123 (3 lettres + 3 chiffres)&quot;</span>;
+    Class&lt;?&gt;[] groups() <span class="hljs-keyword">default</span> {};
+    Class&lt;? <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Payload</span>&gt;[] payload() <span class="hljs-keyword">default</span> {};
+}
+</code></pre>
+<p>Créez <code>validation/ValidSKUValidator.java</code> :</p>
+<p><strong>Logique</strong> :</p>
+<ul>
+<li>Format : <code>^[A-Z]{3}\d{3}$</code></li>
+<li>Exemples valides : ABC123, XYZ789</li>
+<li>Exemples invalides : AB123, ABCD123, abc123</li>
+</ul>
+<p><strong>Implémentation</strong> :</p>
+<pre><code class="language-java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ValidSKUValidator</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">ConstraintValidator</span>&lt;ValidSKU, String&gt; {
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">isValid</span><span class="hljs-params">(String value, ConstraintValidatorContext context)</span> {
+        <span class="hljs-comment">// null est considéré valide (utilisez @NotNull séparément si nécessaire)</span>
+        <span class="hljs-keyword">if</span> (value == <span class="hljs-literal">null</span>) {
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+        }
+
+        <span class="hljs-comment">// Votre regex ici</span>
+        <span class="hljs-keyword">return</span> value.matches(<span class="hljs-string">&quot;votre-regex&quot;</span>);
+    }
+}
+</code></pre>
+<p>Utilisez <code>@ValidSKU</code> sur le champ <code>sku</code> de Product.</p>
+<h3 id="22-contrainte-validprice">2.2 Contrainte @ValidPrice</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Créez une contrainte qui valide que le prix est un multiple de 0.01 (pas de fractions de centimes).</p>
+<p><strong>Pourquoi ?</strong> : Éviter <code>99.999</code> au lieu de <code>99.99</code>.</p>
+<p>Créez :</p>
+<ul>
+<li><code>validation/ValidPrice.java</code></li>
+<li><code>validation/ValidPriceValidator.java</code></li>
+</ul>
+<p><strong>Logique</strong> :</p>
+<pre><code class="language-java"><span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">isValid</span><span class="hljs-params">(BigDecimal value, ConstraintValidatorContext context)</span> {
+    <span class="hljs-keyword">if</span> (value == <span class="hljs-literal">null</span>) <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+
+    <span class="hljs-comment">// Vérifier que le nombre a max 2 décimales</span>
+    <span class="hljs-comment">// Indice : value.scale() &lt;= 2</span>
+}
+</code></pre>
+<h3 id="23-contrainte-de-classe-validdaterange">2.3 Contrainte de Classe @ValidDateRange</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Pour Order, créez une contrainte au niveau classe qui vérifie :</p>
+<ul>
+<li>Si <code>deliveryDate</code> est définie, elle doit être <code>&gt;= orderDate</code></li>
+</ul>
+<p>Créez :</p>
+<ul>
+<li><code>validation/ValidDateRange.java</code></li>
+<li><code>validation/ValidDateRangeValidator.java</code></li>
+</ul>
+<p><strong>Annotation sur Order</strong> :</p>
+<pre><code class="language-java"><span class="hljs-meta">@Entity</span>
+<span class="hljs-meta">@ValidDateRange</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Order</span> {
+    <span class="hljs-keyword">private</span> LocalDateTime orderDate;
+    <span class="hljs-keyword">private</span> LocalDateTime deliveryDate;
+    <span class="hljs-comment">// ...</span>
+}
+</code></pre>
+<p><strong>Validator</strong> :</p>
+<pre><code class="language-java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ValidDateRangeValidator</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">ConstraintValidator</span>&lt;ValidDateRange, Order&gt; {
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">isValid</span><span class="hljs-params">(Order order, ConstraintValidatorContext context)</span> {
+        <span class="hljs-keyword">if</span> (order.getOrderDate() == <span class="hljs-literal">null</span> || order.getDeliveryDate() == <span class="hljs-literal">null</span>) {
+            <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>; <span class="hljs-comment">// Ne valide que si les deux sont présentes</span>
+        }
+
+        <span class="hljs-keyword">return</span> !order.getDeliveryDate().isBefore(order.getOrderDate());
+    }
+}
+</code></pre>
+<h3 id="24-tests-des-contraintes-custom">2.4 Tests des Contraintes Custom</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Testez chaque contrainte :</p>
+<ul>
+<li>SKU invalide : &quot;AB123&quot;, &quot;ABCD123&quot;, &quot;abc123&quot;</li>
+<li>Prix invalide : 99.999</li>
+<li>Date range invalide : deliveryDate avant orderDate</li>
+</ul>
+<p><strong>Livrable 2</strong> : Screenshots des validations custom qui fonctionnent</p>
+<hr>
+<h2 id="partie-3--classes-derreur-structurées-15-min">Partie 3 : Classes d'Erreur Structurées (15 min)</h2>
+<blockquote>
+<p><strong>Commun aux deux frameworks</strong></p>
+</blockquote>
+<h3 id="objectif-2">Objectif</h3>
+<p>Créer des DTOs pour les réponses d'erreur cohérentes</p>
+<h3 id="31-errorresponse">3.1 ErrorResponse</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Créez <code>exception/ErrorResponse.java</code> :</p>
+<pre><code class="language-java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ErrorResponse</span> {
+    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> status;
+    <span class="hljs-keyword">private</span> String error;
+    <span class="hljs-keyword">private</span> String message;
+    <span class="hljs-keyword">private</span> String timestamp;
+    <span class="hljs-keyword">private</span> String path;
+    <span class="hljs-keyword">private</span> List&lt;FieldError&gt; errors;
+
+    <span class="hljs-comment">// Constructeur, getters, setters</span>
+
+    <span class="hljs-keyword">public</span> <span class="hljs-title function_">ErrorResponse</span><span class="hljs-params">(<span class="hljs-type">int</span> status, String error, String message)</span> {
+        <span class="hljs-built_in">this</span>.status = status;
+        <span class="hljs-built_in">this</span>.error = error;
+        <span class="hljs-built_in">this</span>.message = message;
+        <span class="hljs-built_in">this</span>.timestamp = LocalDateTime.now().toString();
+    }
+}
+</code></pre>
+<h3 id="32-fielderror">3.2 FieldError</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Créez <code>exception/FieldError.java</code> :</p>
+<pre><code class="language-java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">FieldError</span> {
+    <span class="hljs-keyword">private</span> String field;
+    <span class="hljs-keyword">private</span> String message;
+    <span class="hljs-keyword">private</span> Object rejectedValue;
+
+    <span class="hljs-comment">// Constructeur, getters, setters</span>
+
+    <span class="hljs-keyword">public</span> <span class="hljs-title function_">FieldError</span><span class="hljs-params">(String field, String message, Object rejectedValue)</span> {
+        <span class="hljs-built_in">this</span>.field = field;
+        <span class="hljs-built_in">this</span>.message = message;
+        <span class="hljs-built_in">this</span>.rejectedValue = rejectedValue;
+    }
+}
+</code></pre>
+<h3 id="33-exceptions-métier">3.3 Exceptions Métier</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Créez les exceptions custom :</p>
+<p><strong>ProductNotFoundException</strong> :</p>
+<pre><code class="language-java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ProductNotFoundException</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">RuntimeException</span> {
+    <span class="hljs-keyword">public</span> <span class="hljs-title function_">ProductNotFoundException</span><span class="hljs-params">(Long id)</span> {
+        <span class="hljs-built_in">super</span>(<span class="hljs-string">&quot;Produit non trouvé avec l&#x27;ID: &quot;</span> + id);
+    }
+}
+</code></pre>
+<p><strong>DuplicateProductException</strong> :</p>
+<pre><code class="language-java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DuplicateProductException</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">RuntimeException</span> {
+    <span class="hljs-keyword">public</span> <span class="hljs-title function_">DuplicateProductException</span><span class="hljs-params">(String sku)</span> {
+        <span class="hljs-built_in">super</span>(<span class="hljs-string">&quot;Un produit existe déjà avec le SKU: &quot;</span> + sku);
+    }
+}
+</code></pre>
+<p><strong>InsufficientStockException</strong> :</p>
+<pre><code class="language-java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">InsufficientStockException</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">RuntimeException</span> {
+    <span class="hljs-keyword">public</span> <span class="hljs-title function_">InsufficientStockException</span><span class="hljs-params">(String productName, <span class="hljs-type">int</span> requested, <span class="hljs-type">int</span> available)</span> {
+        <span class="hljs-built_in">super</span>(String.format(
+            <span class="hljs-string">&quot;Stock insuffisant pour %s. Demandé: %d, Disponible: %d&quot;</span>,
+            productName, requested, available));
+    }
+}
+</code></pre>
+<hr>
+<h2 id="partie-4--exception-mappers-jax-rs-30-min">Partie 4 : Exception Mappers JAX-RS (30 min)</h2>
+<blockquote>
+<p><strong>Jakarta EE uniquement</strong> — Si vous utilisez Spring Boot, passez à la Partie 5.</p>
+</blockquote>
+<h3 id="objectif-3">Objectif</h3>
+<p>Transformer les exceptions en réponses HTTP structurées (Jakarta EE)</p>
+<h3 id="41-validationexceptionmapper">4.1 ValidationExceptionMapper</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Créez <code>mapper/ValidationExceptionMapper.java</code> :</p>
+<pre><code class="language-java"><span class="hljs-meta">@Provider</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ValidationExceptionMapper</span>
+    <span class="hljs-keyword">implements</span> <span class="hljs-title class_">ExceptionMapper</span>&lt;ConstraintViolationException&gt; {
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-keyword">public</span> Response <span class="hljs-title function_">toResponse</span><span class="hljs-params">(ConstraintViolationException exception)</span> {
+
+        List&lt;FieldError&gt; errors = exception.getConstraintViolations()
+            .stream()
+            .map(violation -&gt; <span class="hljs-keyword">new</span> <span class="hljs-title class_">FieldError</span>(
+                violation.getPropertyPath().toString(),
+                violation.getMessage(),
+                violation.getInvalidValue()
+            ))
+            .collect(Collectors.toList());
+
+        <span class="hljs-type">ErrorResponse</span> <span class="hljs-variable">errorResponse</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ErrorResponse</span>(
+            <span class="hljs-number">400</span>,
+            <span class="hljs-string">&quot;Bad Request&quot;</span>,
+            <span class="hljs-string">&quot;Validation failed&quot;</span>
+        );
+        errorResponse.setErrors(errors);
+
+        <span class="hljs-keyword">return</span> Response.status(Response.Status.BAD_REQUEST)
+                       .entity(errorResponse)
+                       .build();
+    }
+}
+</code></pre>
+<h3 id="42-notfoundexceptionmapper">4.2 NotFoundExceptionMapper</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Mapper pour <code>ProductNotFoundException</code> → 404 :</p>
+<pre><code class="language-java"><span class="hljs-meta">@Provider</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">NotFoundExceptionMapper</span>
+    <span class="hljs-keyword">implements</span> <span class="hljs-title class_">ExceptionMapper</span>&lt;ProductNotFoundException&gt; {
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-keyword">public</span> Response <span class="hljs-title function_">toResponse</span><span class="hljs-params">(ProductNotFoundException exception)</span> {
+        <span class="hljs-type">ErrorResponse</span> <span class="hljs-variable">error</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ErrorResponse</span>(
+            <span class="hljs-number">404</span>,
+            <span class="hljs-string">&quot;Not Found&quot;</span>,
+            exception.getMessage()
+        );
+
+        <span class="hljs-keyword">return</span> Response.status(Response.Status.NOT_FOUND)
+                       .entity(error)
+                       .build();
+    }
+}
+</code></pre>
+<h3 id="43-conflictexceptionmapper">4.3 ConflictExceptionMapper</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Mapper pour <code>DuplicateProductException</code> → 409 :</p>
+<p>Même logique que NotFoundExceptionMapper mais avec statut 409.</p>
+<h3 id="44-genericexceptionmapper">4.4 GenericExceptionMapper</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Mapper pour toutes les autres exceptions (fallback) → 500 :</p>
+<pre><code class="language-java"><span class="hljs-meta">@Provider</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">GenericExceptionMapper</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">ExceptionMapper</span>&lt;Exception&gt; {
+
+    <span class="hljs-meta">@Override</span>
+    <span class="hljs-keyword">public</span> Response <span class="hljs-title function_">toResponse</span><span class="hljs-params">(Exception exception)</span> {
+        <span class="hljs-comment">// Log l&#x27;exception (IMPORTANT pour le debugging)</span>
+        exception.printStackTrace(); <span class="hljs-comment">// En prod : utiliser un vrai logger</span>
+
+        <span class="hljs-type">ErrorResponse</span> <span class="hljs-variable">error</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ErrorResponse</span>(
+            <span class="hljs-number">500</span>,
+            <span class="hljs-string">&quot;Internal Server Error&quot;</span>,
+            <span class="hljs-string">&quot;Une erreur inattendue s&#x27;est produite&quot;</span>
+        );
+        <span class="hljs-comment">// NE PAS exposer exception.getMessage() en prod !</span>
+
+        <span class="hljs-keyword">return</span> Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                       .entity(error)
+                       .build();
+    }
+}
+</code></pre>
+<h3 id="45-utilisation-dans-les-resources">4.5 Utilisation dans les Resources</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Modifiez vos Resources pour utiliser <code>@Valid</code> et lancer les exceptions métier :</p>
+<pre><code class="language-java"><span class="hljs-meta">@POST</span>
+<span class="hljs-meta">@Path(&quot;/products&quot;)</span>
+<span class="hljs-keyword">public</span> Response <span class="hljs-title function_">createProduct</span><span class="hljs-params">(<span class="hljs-meta">@Valid</span> Product product)</span> {
+    <span class="hljs-comment">// Vérifier doublon SKU</span>
+    <span class="hljs-keyword">if</span> (productRepository.existsBySku(product.getSku())) {
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">DuplicateProductException</span>(product.getSku());
+    }
+
+    <span class="hljs-type">Product</span> <span class="hljs-variable">created</span> <span class="hljs-operator">=</span> productService.createProduct(product);
+    <span class="hljs-keyword">return</span> Response.status(<span class="hljs-number">201</span>).entity(created).build();
+}
+
+<span class="hljs-meta">@GET</span>
+<span class="hljs-meta">@Path(&quot;/products/{id}&quot;)</span>
+<span class="hljs-keyword">public</span> Response <span class="hljs-title function_">getProduct</span><span class="hljs-params">(<span class="hljs-meta">@PathParam(&quot;id&quot;)</span> Long id)</span> {
+    <span class="hljs-keyword">return</span> productService.getProduct(id)
+        .map(p -&gt; Response.ok(p).build())
+        .orElseThrow(() -&gt; <span class="hljs-keyword">new</span> <span class="hljs-title class_">ProductNotFoundException</span>(id));
+}
+</code></pre>
+<h3 id="46-tests-exception-mappers">4.6 Tests Exception Mappers</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Testez chaque mapper :</p>
+<ol>
+<li>Validation échouée → 400 avec liste d'erreurs</li>
+<li>Product non trouvé → 404 avec message</li>
+<li>Doublon SKU → 409 avec message</li>
+<li>Exception inattendue → 500 générique</li>
+</ol>
+<p><strong>Livrable 3</strong> : Screenshots montrant les différentes erreurs structurées</p>
+<hr>
+<h2 id="partie-5--controlleradvice-spring-30-min">Partie 5 : @ControllerAdvice Spring (30 min)</h2>
+<blockquote>
+<p><strong>Spring Boot uniquement</strong> — Si vous utilisez Jakarta EE, cette partie ne vous concerne pas.</p>
+</blockquote>
+<h3 id="objectif-4">Objectif</h3>
+<p>Transformer les exceptions en réponses HTTP structurées (Spring Boot)</p>
+<h3 id="51-globalexceptionhandler">5.1 GlobalExceptionHandler</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Créez <code>handler/GlobalExceptionHandler.java</code> :</p>
+<pre><code class="language-java"><span class="hljs-meta">@ControllerAdvice</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">GlobalExceptionHandler</span> {
+
+    <span class="hljs-meta">@ExceptionHandler(MethodArgumentNotValidException.class)</span>
+    <span class="hljs-keyword">public</span> ResponseEntity&lt;ErrorResponse&gt; <span class="hljs-title function_">handleValidation</span><span class="hljs-params">(
+        MethodArgumentNotValidException ex)</span> {
+
+        List&lt;FieldError&gt; errors = ex.getBindingResult()
+            .getFieldErrors()
+            .stream()
+            .map(error -&gt; <span class="hljs-keyword">new</span> <span class="hljs-title class_">FieldError</span>(
+                error.getField(),
+                error.getDefaultMessage(),
+                error.getRejectedValue()
+            ))
+            .collect(Collectors.toList());
+
+        <span class="hljs-type">ErrorResponse</span> <span class="hljs-variable">errorResponse</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ErrorResponse</span>(
+            <span class="hljs-number">400</span>,
+            <span class="hljs-string">&quot;Bad Request&quot;</span>,
+            <span class="hljs-string">&quot;Validation failed&quot;</span>
+        );
+        errorResponse.setErrors(errors);
+
+        <span class="hljs-keyword">return</span> ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    <span class="hljs-meta">@ExceptionHandler(ProductNotFoundException.class)</span>
+    <span class="hljs-keyword">public</span> ResponseEntity&lt;ErrorResponse&gt; <span class="hljs-title function_">handleNotFound</span><span class="hljs-params">(
+        ProductNotFoundException ex)</span> {
+
+        <span class="hljs-type">ErrorResponse</span> <span class="hljs-variable">error</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ErrorResponse</span>(
+            <span class="hljs-number">404</span>,
+            <span class="hljs-string">&quot;Not Found&quot;</span>,
+            ex.getMessage()
+        );
+
+        <span class="hljs-keyword">return</span> ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    <span class="hljs-meta">@ExceptionHandler(DuplicateProductException.class)</span>
+    <span class="hljs-keyword">public</span> ResponseEntity&lt;ErrorResponse&gt; <span class="hljs-title function_">handleConflict</span><span class="hljs-params">(
+        DuplicateProductException ex)</span> {
+
+        <span class="hljs-type">ErrorResponse</span> <span class="hljs-variable">error</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ErrorResponse</span>(
+            <span class="hljs-number">409</span>,
+            <span class="hljs-string">&quot;Conflict&quot;</span>,
+            ex.getMessage()
+        );
+
+        <span class="hljs-keyword">return</span> ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    <span class="hljs-meta">@ExceptionHandler(Exception.class)</span>
+    <span class="hljs-keyword">public</span> ResponseEntity&lt;ErrorResponse&gt; <span class="hljs-title function_">handleGeneric</span><span class="hljs-params">(Exception ex)</span> {
+        <span class="hljs-comment">// Log l&#x27;exception</span>
+        ex.printStackTrace();
+
+        <span class="hljs-type">ErrorResponse</span> <span class="hljs-variable">error</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ErrorResponse</span>(
+            <span class="hljs-number">500</span>,
+            <span class="hljs-string">&quot;Internal Server Error&quot;</span>,
+            <span class="hljs-string">&quot;Une erreur inattendue s&#x27;est produite&quot;</span>
+        );
+
+        <span class="hljs-keyword">return</span> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                             .body(error);
+    }
+}
+</code></pre>
+<h3 id="52-utilisation-dans-les-controllers">5.2 Utilisation dans les Controllers</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Modifiez vos Controllers Spring :</p>
+<pre><code class="language-java"><span class="hljs-meta">@PostMapping(&quot;/products&quot;)</span>
+<span class="hljs-keyword">public</span> ResponseEntity&lt;?&gt; createProduct(<span class="hljs-meta">@Valid</span> <span class="hljs-meta">@RequestBody</span> Product product) {
+    <span class="hljs-comment">// Pas besoin de BindingResult, @ControllerAdvice gère</span>
+
+    <span class="hljs-keyword">if</span> (productRepository.existsBySku(product.getSku())) {
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">DuplicateProductException</span>(product.getSku());
+    }
+
+    <span class="hljs-type">Product</span> <span class="hljs-variable">created</span> <span class="hljs-operator">=</span> productService.createProduct(product);
+    <span class="hljs-keyword">return</span> ResponseEntity.status(HttpStatus.CREATED).body(created);
+}
+
+<span class="hljs-meta">@GetMapping(&quot;/products/{id}&quot;)</span>
+<span class="hljs-keyword">public</span> ResponseEntity&lt;Product&gt; <span class="hljs-title function_">getProduct</span><span class="hljs-params">(<span class="hljs-meta">@PathVariable</span> Long id)</span> {
+    <span class="hljs-keyword">return</span> productService.getProduct(id)
+        .map(ResponseEntity::ok)
+        .orElseThrow(() -&gt; <span class="hljs-keyword">new</span> <span class="hljs-title class_">ProductNotFoundException</span>(id));
+}
+</code></pre>
+<h3 id="53-tests-spring">5.3 Tests Spring</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Testez chaque handler :</p>
+<ol>
+<li>Validation échouée → 400 avec liste d'erreurs</li>
+<li>Product non trouvé → 404 avec message</li>
+<li>Doublon SKU → 409 avec message</li>
+<li>Exception inattendue → 500 générique</li>
+</ol>
+<p><strong>Livrable 3</strong> : Screenshots montrant les différentes erreurs structurées</p>
+<hr>
+<h2 id="partie-6--validation-métier-dans-les-services-20-min">Partie 6 : Validation Métier dans les Services (20 min)</h2>
+<blockquote>
+<p><strong>Commun aux deux frameworks</strong></p>
+</blockquote>
+<h3 id="objectif-5">Objectif</h3>
+<p>Ajouter des validations métier qui ne peuvent être déclaratives</p>
+<h3 id="61-validation-de-stock">6.1 Validation de Stock</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Dans <code>ProductService</code>, ajoutez une méthode pour diminuer le stock :</p>
+<pre><code class="language-java"><span class="hljs-meta">@Transactional</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">decreaseStock</span><span class="hljs-params">(Long productId, <span class="hljs-type">int</span> quantity)</span> {
+    <span class="hljs-type">Product</span> <span class="hljs-variable">product</span> <span class="hljs-operator">=</span> productRepository.findById(productId)
+        .orElseThrow(() -&gt; <span class="hljs-keyword">new</span> <span class="hljs-title class_">ProductNotFoundException</span>(productId));
+
+    <span class="hljs-keyword">if</span> (product.getStock() &lt; quantity) {
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">InsufficientStockException</span>(
+            product.getName(),
+            quantity,
+            product.getStock()
+        );
+    }
+
+    product.setStock(product.getStock() - quantity);
+    <span class="hljs-comment">// Pas besoin de save() si l&#x27;entité est managed</span>
+}
+</code></pre>
+<h3 id="62-validation-de-doublon">6.2 Validation de Doublon</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Ajoutez dans <code>IProductRepository</code> :</p>
+<pre><code class="language-java"><span class="hljs-type">boolean</span> <span class="hljs-title function_">existsBySku</span><span class="hljs-params">(String sku)</span>;
+</code></pre>
+<p>Implémentez dans <code>JpaProductRepository</code> :</p>
+<pre><code class="language-java"><span class="hljs-meta">@Override</span>
+<span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">existsBySku</span><span class="hljs-params">(String sku)</span> {
+    <span class="hljs-type">Long</span> <span class="hljs-variable">count</span> <span class="hljs-operator">=</span> em.createQuery(
+        <span class="hljs-string">&quot;SELECT COUNT(p) FROM Product p WHERE p.sku = :sku&quot;</span>,
+        Long.class)
+        .setParameter(<span class="hljs-string">&quot;sku&quot;</span>, sku)
+        .getSingleResult();
+    <span class="hljs-keyword">return</span> count &gt; <span class="hljs-number">0</span>;
+}
+</code></pre>
+<p>Utilisez dans le service avant création.</p>
+<h3 id="63-validation-avant-suppression">6.3 Validation avant Suppression</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Avant de supprimer une Category, vérifiez qu'elle n'a pas de produits :</p>
+<pre><code class="language-java"><span class="hljs-meta">@Transactional</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">deleteCategory</span><span class="hljs-params">(Long id)</span> {
+    <span class="hljs-type">Category</span> <span class="hljs-variable">category</span> <span class="hljs-operator">=</span> categoryRepository.findById(id)
+        .orElseThrow(() -&gt; <span class="hljs-keyword">new</span> <span class="hljs-title class_">CategoryNotFoundException</span>(id));
+
+    <span class="hljs-keyword">if</span> (!category.getProducts().isEmpty()) {
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CategoryNotEmptyException</span>(
+            <span class="hljs-string">&quot;Impossible de supprimer une catégorie contenant des produits&quot;</span>
+        );
+    }
+
+    categoryRepository.delete(id);
+}
+</code></pre>
+<p>Créez l'exception <code>CategoryNotEmptyException</code> et son mapper/handler (409).</p>
+<h3 id="64-tests-validation-métier">6.4 Tests Validation Métier</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Testez :</p>
+<ol>
+<li>Diminuer stock au-delà du disponible → 400 + message clair</li>
+<li>Créer product avec SKU existant → 409</li>
+<li>Supprimer category avec produits → 409</li>
+</ol>
+<p><strong>Livrable 4</strong> : Démonstration des validations métier</p>
+<hr>
+<h2 id="livrables-finaux">Livrables Finaux</h2>
+<h3 id="code-source">Code Source</h3>
+<p><strong>Jakarta EE</strong> :</p>
+<pre><code>Racine_projet/
+    └── src/main/java/.../
+        ├── model/         (entités + validations)
+        ├── validation/    (contraintes custom)
+        ├── exception/     (ErrorResponse, exceptions métier)
+        └── mapper/        (Exception Mappers)
+</code></pre>
+<p><strong>Spring Boot</strong> :</p>
+<pre><code>Racine_projet/
+    └── src/main/java/.../
+        ├── model/         (entités + validations)
+        ├── validation/    (contraintes custom)
+        ├── exception/     (ErrorResponse, exceptions métier)
+        └── handler/       (GlobalExceptionHandler)
+</code></pre>
+<p><strong>Captures</strong> :</p>
+<pre><code>captures/
+├── validation-errors.png
+├── custom-constraints.png
+├── 404-not-found.png
+├── 409-conflict.png
+└── structured-errors.png
+</code></pre>
+<h3 id="readmemd"><a href="http://README.html">README.md</a></h3>
+<pre><code class="language-markdown"><span class="hljs-section"># TP3 - Validation et Gestion des Erreurs</span>
+
+<span class="hljs-section">## Framework utilisé</span>
+[Jakarta EE / Spring Boot] — précisez votre choix
+
+<span class="hljs-section">## Validation Implémentée</span>
+
+<span class="hljs-section">### Contraintes Standards</span>
+<span class="hljs-bullet">-</span> Product : @NotBlank, @Size, @DecimalMin, @Min
+<span class="hljs-bullet">-</span> Category : @NotBlank, @Size
+<span class="hljs-bullet">-</span> Order : @Email, @PastOrPresent, @NotEmpty
+<span class="hljs-bullet">-</span> OrderItem : @Min, @Max
+
+<span class="hljs-section">### Contraintes Custom</span>
+<span class="hljs-bullet">-</span> @ValidSKU : Format ABC123
+<span class="hljs-bullet">-</span> @ValidPrice : Max 2 décimales
+<span class="hljs-bullet">-</span> @ValidDateRange : deliveryDate &gt;= orderDate
+
+<span class="hljs-section">## Gestion des Erreurs</span>
+
+<span class="hljs-section">### Jakarta EE (Exception Mappers)</span>
+<span class="hljs-bullet">-</span> ValidationExceptionMapper → 400
+<span class="hljs-bullet">-</span> NotFoundExceptionMapper → 404
+<span class="hljs-bullet">-</span> ConflictExceptionMapper → 409
+<span class="hljs-bullet">-</span> GenericExceptionMapper → 500
+
+<span class="hljs-section">### Spring Boot (@ControllerAdvice)</span>
+<span class="hljs-bullet">-</span> GlobalExceptionHandler avec @ExceptionHandler
+
+<span class="hljs-section">## Tests Réalisés</span>
+
+<span class="hljs-bullet">-</span> [x] Validation échouée sur chaque champ
+<span class="hljs-bullet">-</span> [x] Contraintes custom fonctionnelles
+<span class="hljs-bullet">-</span> [x] Réponses structurées (JSON)
+<span class="hljs-bullet">-</span> [x] Codes HTTP appropriés
+<span class="hljs-bullet">-</span> [x] Messages clairs en français
+<span class="hljs-bullet">-</span> [x] Exceptions métier gérées
+
+<span class="hljs-section">## Exemples de Réponses d&#x27;Erreur</span>
+
+<span class="hljs-section">### Validation</span>
+<span class="hljs-code">```json
+{
+  &quot;status&quot;: 400,
+  &quot;error&quot;: &quot;Bad Request&quot;,
+  &quot;message&quot;: &quot;Validation failed&quot;,
+  &quot;errors&quot;: [
+    {
+      &quot;field&quot;: &quot;price&quot;,
+      &quot;message&quot;: &quot;doit être supérieur à 0.01&quot;,
+      &quot;rejectedValue&quot;: -10
+    }
+  ]
+}
+</span></code></pre>
+<h3 id="not-found">Not Found</h3>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">404</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;error&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Not Found&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Produit non trouvé avec l&#x27;ID: 123&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<h2 id="conseils">Conseils</h2>
+<ol>
+<li><strong>Testez chaque validation</strong> immédiatement après l'avoir ajoutée</li>
+<li><strong>Utilisez Thunder Client</strong> : sauvegardez vos requêtes de test</li>
+<li><strong>Messages en français</strong> : plus professionnels pour une API française</li>
+<li><strong>Ne jamais exposer de stack traces</strong> en production</li>
+<li><strong>Loggez les erreurs 500</strong> pour le debugging</li>
+</ol>
+<hr>
+<p><strong>Bon courage ! Rendez votre API indestructible !</strong></p>
+
+            <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+            
+        </body>
+        </html>

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -27,17 +28,22 @@ public class OrderService {
     @Transactional
     public Order createOrder(String customerName,
                              String customerEmail,
-                             Map<Long, Integer> productsAndQuantities) {
-        if (customerName == null || customerName.isBlank()) {
-            throw new IllegalArgumentException("Customer name is required");
-        }
+                             Map<Long, Integer> productsAndQuantities,
+                             LocalDateTime orderDate,
+                             LocalDateTime deliveryDate) {
         if (productsAndQuantities == null || productsAndQuantities.isEmpty()) {
             throw new IllegalArgumentException("At least one product is required to create an order");
         }
 
         Order order = new Order();
-        order.setCustomerName(customerName.trim());
+        order.setCustomerName(customerName != null ? customerName.trim() : null);
         order.setCustomerEmail(customerEmail);
+        if (orderDate != null) {
+            order.setOrderDate(orderDate);
+        }
+        if (deliveryDate != null) {
+            order.setDeliveryDate(deliveryDate);
+        }
 
         for (Map.Entry<Long, Integer> entry : productsAndQuantities.entrySet()) {
             Long productId = entry.getKey();

@@ -2,6 +2,7 @@ package com.formation.products.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
@@ -17,13 +18,18 @@ public class OrderItem {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
+    @NotNull(message = "Le produit est obligatoire")
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    @Min(value = 1, message = "La quantité doit être d'au moins 1")
+    @Max(value = 1000, message = "La quantité ne peut pas dépasser 1000")
     @Column(nullable = false)
     private int quantity;
 
+    @NotNull(message = "Le prix unitaire est obligatoire")
+    @DecimalMin(value = "0.01", message = "Le prix unitaire doit être d'au moins 0.01")
     @Column(name = "unit_price", precision = 10, scale = 2, nullable = false)
     private BigDecimal unitPrice;
 

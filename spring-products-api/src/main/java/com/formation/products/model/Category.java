@@ -3,6 +3,8 @@ package com.formation.products.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.BatchSize;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +18,12 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Le nom de la catégorie est obligatoire")
+    @Size(min = 2, max = 100, message = "Le nom doit contenir entre {min} et {max} caractères")
     @Column(nullable = false, unique = true, length = 100)
     private String name;
 
+    @Size(max = 500, message = "La description ne peut pas dépasser {max} caractères")
     @Column(length = 500)
     private String description;
 

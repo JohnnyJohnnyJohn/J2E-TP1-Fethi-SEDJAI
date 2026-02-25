@@ -66,6 +66,7 @@ L'application demarre sur `http://localhost:8081`.
 | POST    | `/api/products`                 | Creer un produit                 |
 | PUT     | `/api/products/{id}`            | Modifier un produit              |
 | PATCH   | `/api/products/{id}/stock`      | Modifier le stock                |
+| PATCH   | `/api/products/{id}/decrease-stock?quantity=N` | Diminuer le stock     |
 | DELETE  | `/api/products/{id}`            | Supprimer un produit             |
 | GET     | `/api/products/slow`            | Demo N+1 (sans JOIN FETCH)       |
 | GET     | `/api/products/fast`            | Demo optimisee (JOIN FETCH)      |
@@ -125,7 +126,7 @@ L'application demarre sur `http://localhost:8081`.
 | POST    | `/api/demo/test-repositories` | Tester CRUD sur chaque repository                     |
 
 
-## Tests Effectues
+## Tests Effectues (TP2)
 
 - CRUD complet sur toutes les entites
 - Relations bidirectionnelles fonctionnelles
@@ -136,7 +137,7 @@ L'application demarre sur `http://localhost:8081`.
 - @BatchSize sur Category.products
 - @NamedEntityGraph (Product.withCategory, Product.full)
 
-## Captures (dossier `captures/`)
+## Captures TP2 (dossier `captures/`)
 
 
 | Fichier                             | Livrable                           |
@@ -147,16 +148,16 @@ L'application demarre sur `http://localhost:8081`.
 | `TP2-livrable4-rollback.png`        | Demo rollback transactionnel       |
 | `TP2-livrable5-orders.png`          | Tables orders + order_items        |
 | `TP2-livrable6-aggregation.png`     | Resultats requetes d'agregation    |
-| `TP2-livrable7-nplus1.png`          | Logs N+1 vs 1 requete              |
+| `TP2-livrable7-nplus1.png`          | Logs N+1 vs 1 requete             |
 
 
-## Difficultes Rencontrees
+## Difficultes Rencontrees (TP2)
 
 1. **ByteBuddyInterceptor / LazyInitializationException** : Jackson ne sait pas serialiser les proxies Hibernate lazy. Resolu avec `@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})` sur les entites.
 2. **Probleme N+1** : sans JOIN FETCH, chaque acces a `product.getCategory()` declenche un SELECT supplementaire. Resolu avec des requetes JPQL utilisant `LEFT JOIN FETCH`.
 3. **Serialisation circulaire** : les relations bidirectionnelles Order/OrderItem causent une boucle infinie en JSON. Resolu avec `@JsonIgnore` sur `OrderItem.order`.
 
-## Points Cles Appris
+## Points Cles Appris (TP2)
 
 1. **JOIN FETCH** est essentiel pour eviter le probleme N+1 en JPA.
 2. **@Transactional** garantit l'atomicite : en cas d'exception, tout est annule (rollback).
@@ -164,3 +165,122 @@ L'application demarre sur `http://localhost:8081`.
 4. **DTO projections** avec `SELECT NEW` evitent de retourner des `Object[]` et offrent un typage fort.
 5. **@BatchSize** reduit le nombre de requetes lors du chargement lazy de collections (@OneToMany).
 
+---
+
+# TP3 - Validation et Gestion des Erreurs
+
+## Framework utilise
+
+Spring Boot (Spring MVC + Bean Validation)
+
+## Architecture ajoutee
+
+```
+src/main/java/com/formation/products/
+├── validation/
+│   ├── ValidSKU.java              (annotation custom)
+│   ├── ValidSKUValidator.java
+│   ├── ValidPrice.java
+│   ├── ValidPriceValidator.java
+│   ├── ValidDateRange.java
+│   └── ValidDateRangeValidator.java
+├── exception/
+│   ├── ErrorResponse.java
+│   ├── FieldError.java
+│   ├── ProductNotFoundException.java
+│   ├── DuplicateProductException.java
+│   ├── InsufficientStockException.java
+│   ├── CategoryNotFoundException.java
+│   └── CategoryNotEmptyException.java
+└── handler/
+    └── GlobalExceptionHandler.java (@ControllerAdvice)
+```
+
+## Validation Implementee
+
+### Contraintes Standards
+
+- **Product** : `@NotBlank`, `@Size(2-200)`, `@NotNull`, `@DecimalMin("0.01")`, `@Digits(8,2)`, `@Min(0)`
+- **Category** : `@NotBlank`, `@Size(2-100)`, `@Column(unique=true)`
+- **Order** : `@NotBlank`, `@Size(2-100)`, `@Email`, `@PastOrPresent`
+- **OrderItem** : `@NotNull`, `@Min(1)`, `@Max(1000)`, `@DecimalMin("0.01")`
+
+### Contraintes Custom
+
+- **@ValidSKU** : Format `^[A-Z]{3}\d{3}$` (ex: ABC123, XYZ789)
+- **@ValidPrice** : Verifie max 2 decimales (rejette 99.999)
+- **@ValidDateRange** : Contrainte au niveau classe sur Order, verifie `deliveryDate >= orderDate`
+
+## Gestion des Erreurs
+
+### @ControllerAdvice (GlobalExceptionHandler)
+
+| Exception                          | Code HTTP | Type        |
+| ---------------------------------- | --------- | ----------- |
+| `MethodArgumentNotValidException`  | 400       | Validation  |
+| `ConstraintViolationException`     | 400       | Validation  |
+| `InsufficientStockException`       | 400       | Metier      |
+| `IllegalArgumentException`         | 400       | Metier      |
+| `ProductNotFoundException`         | 404       | Not Found   |
+| `CategoryNotFoundException`        | 404       | Not Found   |
+| `DuplicateProductException`        | 409       | Conflict    |
+| `CategoryNotEmptyException`        | 409       | Conflict    |
+| `Exception` (fallback)             | 500       | Generique   |
+
+### Format de reponse uniforme
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Validation failed",
+  "timestamp": "2026-02-25T17:45:10.164049",
+  "path": "/api/products",
+  "errors": [
+    {
+      "field": "price",
+      "message": "Le prix doit être d'au moins 0.01",
+      "rejectedValue": -10
+    }
+  ]
+}
+```
+
+## Validations Metier (Partie 6)
+
+- **decreaseStock** : verifie que le stock est suffisant avant de diminuer, sinon `InsufficientStockException`
+- **existsBySku** : verifie l'unicite du SKU avant creation, sinon `DuplicateProductException`
+- **deleteCategory** : verifie que la categorie n'a pas de produits, sinon `CategoryNotEmptyException`
+
+## Tests Realises (TP3)
+
+- [x] Validation echouee sur chaque champ (nom vide, prix negatif, email invalide)
+- [x] Contraintes custom fonctionnelles (@ValidSKU, @ValidPrice, @ValidDateRange)
+- [x] Reponses structurees (JSON avec ErrorResponse + FieldError)
+- [x] Codes HTTP appropries (400, 404, 409, 500)
+- [x] Messages clairs en francais
+- [x] Exceptions metier gerees (stock insuffisant, doublon SKU, categorie non vide)
+
+## Captures TP3 (dossier `captures/`)
+
+
+| Fichier                                  | Livrable                              |
+| ---------------------------------------- | ------------------------------------- |
+| `TP3-livrable1-validation-errors.png`    | Erreurs de validation Bean            |
+| `TP3-livrable2-custom-constraints.png`   | Contraintes custom (SKU, prix, dates) |
+| `TP3-livrable3-structured-errors.png`    | Erreurs structurees (400/404/409/500) |
+| `TP3-livrable4-business-validation.png`  | Validations metier                    |
+
+
+## Difficultes Rencontrees (TP3)
+
+1. **Validation du DTO vs entite** : la validation `@ValidDateRange` est au niveau de l'entite `Order`, mais la creation passe par un DTO `CreateOrderRequest`. Il a fallu propager les dates optionnelles du DTO vers l'entite pour que Hibernate valide la contrainte au moment du persist.
+2. **ConstraintViolationException vs MethodArgumentNotValidException** : Spring MVC lance `MethodArgumentNotValidException` pour les `@RequestBody`, tandis que Hibernate Validator lance `ConstraintViolationException` pour les entites au moment du persist. Il faut gerer les deux dans le `GlobalExceptionHandler`.
+
+## Points Cles Appris (TP3)
+
+1. **Bean Validation** est declaratif : les annotations sur les champs suffisent, pas besoin de code de validation manuelle.
+2. **@ControllerAdvice** centralise la gestion des erreurs en un seul endroit au lieu de try/catch dans chaque controller.
+3. **Contraintes custom** (`@Constraint` + `ConstraintValidator`) permettent de valider des regles metier complexes (format SKU, precision prix, coherence de dates).
+4. **Separation des responsabilites** : la validation declarative (@NotBlank, @Size) sur les entites, la validation metier (stock, doublons) dans les services, et la mise en forme des erreurs dans le handler.
+5. **Ne jamais exposer de stack traces** : le handler generique renvoie un message generique pour les erreurs 500.

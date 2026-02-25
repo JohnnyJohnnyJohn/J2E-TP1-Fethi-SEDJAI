@@ -1,5 +1,7 @@
 package com.formation.products.service;
 
+import com.formation.products.exception.CategoryNotEmptyException;
+import com.formation.products.exception.CategoryNotFoundException;
 import com.formation.products.model.Category;
 import com.formation.products.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
@@ -35,7 +37,7 @@ public class CategoryService {
     @Transactional
     public Category createCategory(String name, String description) {
         if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Category name is required");
+            throw new IllegalArgumentException("Le nom de la catégorie est obligatoire");
         }
         Category category = new Category(name.trim(), description);
         return categoryRepository.save(category);
@@ -44,7 +46,7 @@ public class CategoryService {
     @Transactional
     public Category updateCategory(Long id, String name, String description) {
         Category existing = categoryRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + id));
+                .orElseThrow(() -> new CategoryNotFoundException(id));
         if (name != null && !name.trim().isEmpty()) {
             existing.setName(name.trim());
         }
@@ -56,9 +58,14 @@ public class CategoryService {
 
     @Transactional
     public void deleteCategory(Long id) {
-        if (!categoryRepository.existsById(id)) {
-            throw new IllegalArgumentException("Category not found with id: " + id);
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException(id));
+
+        if (!category.getProducts().isEmpty()) {
+            throw new CategoryNotEmptyException(
+                    "Impossible de supprimer une catégorie contenant des produits");
         }
-        categoryRepository.deleteById(id);
+
+        categoryRepository.delete(category);
     }
 }

@@ -1,20 +1,21 @@
 package com.formation.products.controller;
 
+import com.formation.products.exception.CategoryNotFoundException;
 import com.formation.products.model.Category;
 import com.formation.products.service.CategoryService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/categories")
 public class CategoryController {
-
-    private static final String NOT_FOUND = "not found";
 
     private final CategoryService categoryService;
 
@@ -28,77 +29,53 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getCategory(@PathVariable Long id,
-                                              @RequestParam(defaultValue = "false") boolean withProducts) {
+    public ResponseEntity<Category> getCategory(@PathVariable Long id,
+                                                @RequestParam(defaultValue = "false") boolean withProducts) {
         if (withProducts) {
             return categoryService.getCategoryWithProducts(id)
-                    .<ResponseEntity<Object>>map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.status(404).body(Map.of("message", "Category not found with id: " + id)));
+                    .map(ResponseEntity::ok)
+                    .orElseThrow(() -> new CategoryNotFoundException(id));
         }
         return categoryService.getCategory(id)
-                .<ResponseEntity<Object>>map(ResponseEntity::ok)
-                .orElse(ResponseEntity.status(404).body(Map.of("message", "Category not found with id: " + id)));
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new CategoryNotFoundException(id));
     }
 
     @PostMapping
-    public ResponseEntity<Object> createCategory(@RequestBody CategoryCreateRequest request) {
-        try {
-            Category created = categoryService.createCategory(request.getName(), request.getDescription());
-            URI location = ServletUriComponentsBuilder
-                    .fromCurrentRequest()
-                    .path("/{id}")
-                    .buildAndExpand(created.getId())
-                    .toUri();
-            return ResponseEntity.created(location).body(created);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
-        }
+    public ResponseEntity<Category> createCategory(@Valid @RequestBody CategoryCreateRequest request) {
+        Category created = categoryService.createCategory(request.getName(), request.getDescription());
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(created.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateCategory(@PathVariable Long id, @RequestBody CategoryCreateRequest request) {
-        try {
-            Category updated = categoryService.updateCategory(id, request.getName(), request.getDescription());
-            return ResponseEntity.ok(updated);
-        } catch (IllegalArgumentException e) {
-            if (e.getMessage() != null && e.getMessage().contains(NOT_FOUND)) {
-                return ResponseEntity.status(404).body(Map.of("message", e.getMessage()));
-            }
-            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
-        }
+    public ResponseEntity<Category> updateCategory(@PathVariable Long id,
+                                                   @Valid @RequestBody CategoryCreateRequest request) {
+        Category updated = categoryService.updateCategory(id, request.getName(), request.getDescription());
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteCategory(@PathVariable Long id) {
-        try {
-            categoryService.deleteCategory(id);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            if (e.getMessage() != null && e.getMessage().contains(NOT_FOUND)) {
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
-        }
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+        categoryService.deleteCategory(id);
+        return ResponseEntity.noContent().build();
     }
 
     public static class CategoryCreateRequest {
+        @NotBlank(message = "Le nom de la catégorie est obligatoire")
+        @Size(min = 2, max = 100, message = "Le nom doit contenir entre {min} et {max} caractères")
         private String name;
+
+        @Size(max = 500, message = "La description ne peut pas dépasser {max} caractères")
         private String description;
 
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public void setDescription(String description) {
-            this.description = description;
-        }
+        public String getName() { return name; }
+        public void setName(String name) { this.name = name; }
+        public String getDescription() { return description; }
+        public void setDescription(String description) { this.description = description; }
     }
 }

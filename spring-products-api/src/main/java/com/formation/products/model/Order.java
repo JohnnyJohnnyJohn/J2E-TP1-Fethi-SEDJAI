@@ -1,6 +1,8 @@
 package com.formation.products.model;
 
+import com.formation.products.validation.ValidDateRange;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -11,6 +13,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "orders")
+@ValidDateRange
 public class Order {
 
     @Id
@@ -20,9 +23,12 @@ public class Order {
     @Column(name = "order_number", nullable = false, unique = true, length = 50)
     private String orderNumber;
 
+    @NotBlank(message = "Le nom du client est obligatoire")
+    @Size(min = 2, max = 100, message = "Le nom du client doit contenir entre {min} et {max} caractères")
     @Column(name = "customer_name", nullable = false, length = 200)
     private String customerName;
 
+    @Email(message = "L'adresse email n'est pas valide")
     @Column(name = "customer_email", length = 255)
     private String customerEmail;
 
@@ -33,8 +39,12 @@ public class Order {
     @Column(name = "total_amount", precision = 12, scale = 2, nullable = false)
     private BigDecimal totalAmount = BigDecimal.ZERO;
 
+    @PastOrPresent(message = "La date de commande ne peut pas être dans le futur")
     @Column(name = "order_date", nullable = false)
     private LocalDateTime orderDate;
+
+    @Column(name = "delivery_date")
+    private LocalDateTime deliveryDate;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
@@ -121,6 +131,14 @@ public class Order {
 
     public void setOrderDate(LocalDateTime orderDate) {
         this.orderDate = orderDate;
+    }
+
+    public LocalDateTime getDeliveryDate() {
+        return deliveryDate;
+    }
+
+    public void setDeliveryDate(LocalDateTime deliveryDate) {
+        this.deliveryDate = deliveryDate;
     }
 
     public List<OrderItem> getItems() {

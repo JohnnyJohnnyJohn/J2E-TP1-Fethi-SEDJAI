@@ -1,5 +1,8 @@
 package com.formation.products.service;
 
+import com.formation.products.exception.DuplicateProductException;
+import com.formation.products.exception.InsufficientStockException;
+import com.formation.products.exception.ProductNotFoundException;
 import com.formation.products.model.Category;
 import com.formation.products.model.Product;
 import com.formation.products.repository.CategoryRepository;
@@ -8,7 +11,6 @@ import com.formation.products.repository.SupplierRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +34,6 @@ public class ProductService {
         return productRepository.findAllWithCategoryAndSupplier();
     }
 
-    /** Part 7: N+1 demo — no JOIN FETCH, triggers N extra SELECTs for category/supplier */
     @Transactional(readOnly = true)
     public List<Product> getAllProductsSlow() {
         List<Product> products = productRepository.findAllSlow();
@@ -43,19 +44,16 @@ public class ProductService {
         return products;
     }
 
-    /** Part 7: optimized with JOIN FETCH — single query */
     @Transactional(readOnly = true)
     public List<Product> getAllProductsFast() {
         return productRepository.findAllWithCategoryAndSupplier();
     }
 
-    /** Part 7.3: using @NamedEntityGraph("Product.withCategory") */
     @Transactional(readOnly = true)
     public List<Product> getAllProductsWithCategoryGraph() {
         return productRepository.findAllWithCategoryGraph();
     }
 
-    /** Part 7.3: using @NamedEntityGraph("Product.full") */
     @Transactional(readOnly = true)
     public List<Product> getAllProductsWithFullGraph() {
         return productRepository.findAllWithFullGraph();
@@ -80,7 +78,9 @@ public class ProductService {
 
     @Transactional
     public Product createProduct(Product product) {
-        validateProduct(product);
+        if (product.getSku() != null && productRepository.existsBySku(product.getSku())) {
+            throw new DuplicateProductException(product.getSku());
+        }
         return productRepository.save(product);
     }
 
@@ -89,15 +89,16 @@ public class ProductService {
         Category category = categoryRepository.findByName(categoryName)
                 .orElseGet(() -> categoryRepository.save(new Category(categoryName, null)));
         product.setCategory(category);
-        validateProduct(product);
+        if (product.getSku() != null && productRepository.existsBySku(product.getSku())) {
+            throw new DuplicateProductException(product.getSku());
+        }
         return productRepository.save(product);
     }
 
     @Transactional
     public Product updateProduct(Long id, Product updatedProduct) {
         Product existing = productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + id));
-        validateProduct(updatedProduct);
+                .orElseThrow(() -> new ProductNotFoundException(id));
         updatedProduct.setId(id);
         updatedProduct.setCreatedAt(existing.getCreatedAt());
         return productRepository.save(updatedProduct);
@@ -106,7 +107,7 @@ public class ProductService {
     @Transactional
     public void deleteProduct(Long id) {
         if (!productRepository.existsById(id)) {
-            throw new IllegalArgumentException("Product not found with id: " + id);
+            throw new ProductNotFoundException(id);
         }
         productRepository.deleteById(id);
     }
@@ -114,13 +115,23 @@ public class ProductService {
     @Transactional
     public void updateStock(Long id, int quantity) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + id));
+                .orElseThrow(() -> new ProductNotFoundException(id));
         int newStock = product.getStock() + quantity;
         if (newStock < 0) {
-            throw new IllegalArgumentException("Insufficient stock. Current: " + product.getStock() + ", requested change: " + quantity);
+            throw new InsufficientStockException(product.getName(), Math.abs(quantity), product.getStock());
         }
         product.setStock(newStock);
         productRepository.save(product);
+    }
+
+    @Transactional
+    public void decreaseStock(Long productId, int quantity) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
+        if (product.getStock() < quantity) {
+            throw new InsufficientStockException(product.getName(), quantity, product.getStock());
+        }
+        product.setStock(product.getStock() - quantity);
     }
 
     @Transactional
@@ -136,26 +147,9 @@ public class ProductService {
         }
     }
 
-    /**
-     * Demo: creates a product then throws so the transaction rolls back.
-     * Use from a test or temporary endpoint to verify nothing is persisted.
-     */
     @Transactional
     public void createProductThenRollback(Product product) {
-        validateProduct(product);
         productRepository.save(product);
         throw new RuntimeException("Rollback demo: product was not persisted");
-    }
-
-    private void validateProduct(Product product) {
-        if (product.getName() == null || product.getName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Product name is required");
-        }
-        if (product.getPrice() == null || product.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Product price must be positive");
-        }
-        if (product.getStock() < 0) {
-            throw new IllegalArgumentException("Product stock cannot be negative");
-        }
     }
 }

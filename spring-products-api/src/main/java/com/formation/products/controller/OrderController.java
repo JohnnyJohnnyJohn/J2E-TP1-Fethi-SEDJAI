@@ -3,11 +3,17 @@ package com.formation.products.controller;
 import com.formation.products.model.Order;
 import com.formation.products.model.OrderStatus;
 import com.formation.products.service.OrderService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -36,84 +42,60 @@ public class OrderController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getOrder(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(orderService.getById(id));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(404).body(Map.of("message", e.getMessage()));
-        }
+        return ResponseEntity.ok(orderService.getById(id));
     }
 
     @PostMapping
-    public ResponseEntity<?> createOrder(@RequestBody CreateOrderRequest request) {
-        try {
-            Order created = orderService.createOrder(
-                    request.getCustomerName(),
-                    request.getCustomerEmail(),
-                    request.getProductsAndQuantities());
-            URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                    .path("/{id}")
-                    .buildAndExpand(created.getId())
-                    .toUri();
-            return ResponseEntity.created(location).body(created);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
-        }
+    public ResponseEntity<?> createOrder(@Valid @RequestBody CreateOrderRequest request) {
+        Order created = orderService.createOrder(
+                request.getCustomerName(),
+                request.getCustomerEmail(),
+                request.getProductsAndQuantities(),
+                request.getOrderDate(),
+                request.getDeliveryDate());
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(created.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(created);
     }
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<?> updateStatus(@PathVariable Long id,
                                           @RequestBody UpdateStatusRequest request) {
-        try {
-            orderService.updateOrderStatus(id, request.getStatus());
-            return ResponseEntity.ok(orderService.getById(id));
-        } catch (IllegalArgumentException e) {
-            if (e.getMessage() != null && e.getMessage().contains("not found")) {
-                return ResponseEntity.status(404).body(Map.of("message", e.getMessage()));
-            }
-            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
-        }
+        orderService.updateOrderStatus(id, request.getStatus());
+        return ResponseEntity.ok(orderService.getById(id));
     }
 
     public static class CreateOrderRequest {
+        @NotBlank(message = "Le nom du client est obligatoire")
+        @Size(min = 2, max = 100, message = "Le nom du client doit contenir entre {min} et {max} caractères")
         private String customerName;
+
+        @Email(message = "L'adresse email n'est pas valide")
         private String customerEmail;
+
+        @NotEmpty(message = "Au moins un produit est requis")
         private Map<Long, Integer> productsAndQuantities;
 
-        public String getCustomerName() {
-            return customerName;
-        }
+        private LocalDateTime orderDate;
+        private LocalDateTime deliveryDate;
 
-        public void setCustomerName(String customerName) {
-            this.customerName = customerName;
-        }
-
-        public String getCustomerEmail() {
-            return customerEmail;
-        }
-
-        public void setCustomerEmail(String customerEmail) {
-            this.customerEmail = customerEmail;
-        }
-
-        public Map<Long, Integer> getProductsAndQuantities() {
-            return productsAndQuantities;
-        }
-
-        public void setProductsAndQuantities(Map<Long, Integer> productsAndQuantities) {
-            this.productsAndQuantities = productsAndQuantities;
-        }
+        public String getCustomerName() { return customerName; }
+        public void setCustomerName(String customerName) { this.customerName = customerName; }
+        public String getCustomerEmail() { return customerEmail; }
+        public void setCustomerEmail(String customerEmail) { this.customerEmail = customerEmail; }
+        public Map<Long, Integer> getProductsAndQuantities() { return productsAndQuantities; }
+        public void setProductsAndQuantities(Map<Long, Integer> productsAndQuantities) { this.productsAndQuantities = productsAndQuantities; }
+        public LocalDateTime getOrderDate() { return orderDate; }
+        public void setOrderDate(LocalDateTime orderDate) { this.orderDate = orderDate; }
+        public LocalDateTime getDeliveryDate() { return deliveryDate; }
+        public void setDeliveryDate(LocalDateTime deliveryDate) { this.deliveryDate = deliveryDate; }
     }
 
     public static class UpdateStatusRequest {
         private OrderStatus status;
-
-        public OrderStatus getStatus() {
-            return status;
-        }
-
-        public void setStatus(OrderStatus status) {
-            this.status = status;
-        }
+        public OrderStatus getStatus() { return status; }
+        public void setStatus(OrderStatus status) { this.status = status; }
     }
 }
-

@@ -65,4 +65,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @EntityGraph(value = "Product.full")
     @Query("SELECT p FROM Product p")
     List<Product> findAllWithFullGraph();
+
+    boolean existsBySku(String sku);
 }
