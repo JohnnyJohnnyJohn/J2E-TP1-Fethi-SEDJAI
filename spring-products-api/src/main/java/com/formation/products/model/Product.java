@@ -1,19 +1,31 @@
 package com.formation.products.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "products")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@NamedEntityGraph(
+    name = "Product.withCategory",
+    attributeNodes = @NamedAttributeNode("category")
+)
+@NamedEntityGraph(
+    name = "Product.full",
+    attributeNodes = {
+        @NamedAttributeNode("category"),
+        @NamedAttributeNode("supplier")
+    }
+)
 public class Product {
 
     @Id
-    @Column(length = 36)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 200)
     private String name;
 
     @Column(length = 1000)
@@ -23,40 +35,56 @@ public class Product {
     private BigDecimal price;
 
     @Column(nullable = false)
-    private String category;
-
-    @Column(nullable = false)
     private int stock;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supplier_id")
+    private Supplier supplier;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    public Product() {
-        this.id = UUID.randomUUID().toString();
-        this.createdAt = LocalDateTime.now();
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
     }
 
-    public Product(String name, BigDecimal price, String category) {
-        this();
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
+    public Product() {
+    }
+
+    public Product(String name, BigDecimal price, Category category) {
         this.name = name;
         this.price = price;
         this.category = category;
     }
 
-    public Product(String name, String description, BigDecimal price, String category, int stock) {
-        this();
+    public Product(String name, String description, BigDecimal price, Category category, Supplier supplier, int stock) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.category = category;
+        this.supplier = supplier;
         this.stock = stock;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -84,20 +112,28 @@ public class Product {
         this.price = price;
     }
 
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
     public int getStock() {
         return stock;
     }
 
     public void setStock(int stock) {
         this.stock = stock;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public Supplier getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(Supplier supplier) {
+        this.supplier = supplier;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -108,14 +144,11 @@ public class Product {
         this.createdAt = createdAt;
     }
 
-    @Override
-    public String toString() {
-        return "Product{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", price=" + price +
-                ", category='" + category + '\'' +
-                ", stock=" + stock +
-                '}';
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

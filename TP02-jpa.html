@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>TP2 &colon; Persistence avec JPA</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+/* From extension jebbs.markdown-extended */
+@font-face {
+  font-family: "Material Icons";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Material Icons"), local("MaterialIcons-Regular"), url("data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAAAfIAAsAAAAADDAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHU1VCAAABCAAAADMAAABCsP6z7U9TLzIAAAE8AAAARAAAAFZW7kosY21hcAAAAYAAAADTAAACjtP6ytBnbHlmAAACVAAAAxgAAAQ4zRtvlGhlYWQAAAVsAAAALwAAADYRwZsnaGhlYQAABZwAAAAcAAAAJAeKAzxobXR4AAAFuAAAABIAAAA8OGQAAGxvY2EAAAXMAAAAIAAAACAG5AfwbWF4cAAABewAAAAfAAAAIAEfAERuYW1lAAAGDAAAAVcAAAKFkAhoC3Bvc3QAAAdkAAAAYgAAAK2vz7wkeJxjYGRgYOBikGPQYWB0cfMJYeBgYGGAAJAMY05meiJQDMoDyrGAaQ4gZoOIAgCKIwNPAHicY2BkPsQ4gYGVgYOpk+kMAwNDP4RmfM1gxMjBwMDEwMrMgBUEpLmmMDgwVLy4xKzzX4chhrmK4QpQmBEkBwAZygyweJzFkr0NwjAQhZ+TEP6CRUfHBEwRUWaQTICyQbpMwRCskA5RUIONxG0RnnNpKAIV4qzPku/8c353ACYAYrIjCWCuMAh2ptf0/hiL3p/gyPUWa3osqlt0L1zu9r71z8dGrJRykFoauXQd932Lj5vhG+MjxGeYI8MKETObMpslf5EyP8tg+vHun5r539PvlvXzaVhRFVQDTPEWKVQR90KhnnC5Ek67vUKN4VuFasM/ldARj43CCkCsEjpJSoVVgRyU0GVSK6wUpFFCx8lFgX0BiXpRPQB4nE2TTWjcRhTH3xttpDhxN7uxPlp3u/FK7moRPixafRijNosxSw/LUsIwNcaEHPZggo/FmEKMCKWU4kNOOftQSlhE8alnH0Ix9BqWnHooPRrTQ0+mnu2bXTu2pPdGM9LM/6c3fwECTM4gBBMYQNqxzLrZAjqYSlqu2TAHZQA0/DQJH6FtzqGDnvbt4Ggwvzw/nL8EfH8kW0fsuRqhgWXZnY7M1picaUL7Du5BHeDzMIl83dAt016wH1qmvtSMo5R6YRJHTR//FXsff/nj/tc/5K9P5d+nP22+fFK5u7v3K39SW3y+OtDKO3L85vD09PD9z5X17a2N1g4tqk01RlqX7gyoEmnsWQtVr4rtZMmukEaFBZxzefkCn11cyKMLZgshRwgTYNoLNXCBz2ja7HvZG7hDpPSNfoo5vs0knK/9hb+rNpu+8kHPgk/Ao4kK3tWtTpSEtvkA9c+wE6UaUdwieNkaHg55tBEtRiEPw1s0+FtrtTcc9two2lhMknV7PZF/cs6+uUFTmpTGbEx7sQCPSLOttHS3GRltqp7SNzVSKzl6aWnZT/CX5k6/v9N3Hh8fHBwffJVjhrC6OgH5dkIt/tPsq+d/PD5Qz7G7efzq1THFjdZVPe/N6ulQ3JnDWSE5junsFsVIiFwL/htf1S5gJ3BfOcUxfHKLnzqpFpyfZ9cX+/5WB6a+Y0pHpzkNrYNVDwMsikK+y7WuLCRg/oFHkA8VT3rDg5ZnU6ktzzINymV0m74Xd5pfIGXyFeVEQSShkzqG7TBBa2OxVRKitLXv7h3uuftXnXq7lz2tZ/WnWa9dx9dCjDhHzmuVQATlmljr9dZErUydSo2Hbi/b1vXtrOeGCk2/8s3ZlO8+ueJT8BVlw5pGw2oYccdSiHHqx0RlabHqdNR9jAETl6PreJcPBnnfpTLnOQ8C3OV8AmQGzouV1iZdeb5SSIoVc8W8/kcDtksUH5FrU6/aqBqNWcMEzxG4DAQ14qRQhi9mWU0rzepKezbjfgCwQKxVYq5ajRgpRqy45CqwkJydcEkbTkvRz8P5/2ZpDTN4nGNgZGBgAOKb6v+/xvPbfGXgZmEAgeuB2kkI+v8bFgbmKiCXg4EJJAoAPyAKhQB4nGNgZGBg1vmvwxDDwgACQJKRARXwAwAzZQHQeJxjYQCCFAYGFgbSMQAcWACdAAAAAAAAAAwALgBgAIQAmADSAQgBIgE8AVABoAHeAfwCHHicY2BkYGDgZ7BgYGMAASYg5gJCBob/YD4DAA/hAWQAeJxlkbtuwkAURMc88gApQomUJoq0TdIQzEOpUDokKCNR0BuzBiO/tF6QSJcPyHflE9Klyyekz2CuG8cr7547M3d9JQO4xjccnJ57vid2cMHqxDWc40G4Tv1JuEF+Fm6ijRfhM+oz4Ra6eBVu4wZvvMFpXLIa40PYQQefwjVc4Uu4Tv1HuEH+FW7i1mkKn6Hj3Am3sHC6wm08Ou8tpSZGe1av1PKggjSxPd8zJtSGTuinyVGa6/Uu8kxZludCmzxMEzV0B6U004k25W35fj2yNlCBSWM1paujKFWZSbfat+7G2mzc7weiu34aczzFNYGBhgfLfcV6iQP3ACkSaj349AxXSN9IT0j16JepOb01doiKbNWt1ovippz6sVYYwsXgX2rGVFIkq7Pl2PNrI6qW6eOshj0xaSq9mpNEZIWs8LZUfOouNkVXxp/d5woqebeYIf4D2J1ywQB4nG3LOw6AIBAE0B384B+PAkgEa+QwNnYmHt+EpXSal5lkSBBnoP8oCFSo0aCFRIceA0ZMmLFAYSW88rmvtMUjG3RiQ9HvpfusM6zWNmtc5H/iPewha50tOt5PS/QBx2IeSwAA") format("woff");
+}
+
+.admonition {
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12), 0 3px 1px -2px rgba(0, 0, 0, .2);
+  position: relative;
+  margin: 1.5625em 0;
+  padding: 0 1.2rem;
+  border-left: .4rem solid rgba(68, 138, 255, .8);
+  border-radius: .2rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  overflow: auto;
+}
+
+.admonition>p {
+  margin-top: .8rem;
+}
+
+.admonition>.admonition-title {
+  margin: 0 -1.2rem;
+  padding: .8rem 1.2rem .8rem 3.6rem;
+  border-bottom: 1px solid rgba(68, 138, 255, .2);
+  background-color: rgba(68, 138, 255, .1);
+  font-weight: 700;
+}
+
+.admonition>.admonition-title:before {
+  position: absolute;
+  left: 1.2rem;
+  font-size: 1.5rem;
+  color: rgba(68, 138, 255, .8);
+  content: "\E3C9";
+}
+
+.admonition>.admonition-title:before {
+  font-family: Material Icons;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: 400;
+  line-height: 2rem;
+  text-transform: none;
+  white-space: nowrap;
+  speak: none;
+  word-wrap: normal;
+  direction: ltr;
+}
+
+.admonition.summary,
+.admonition.abstract,
+.admonition.tldr {
+  border-left-color: rgba(0, 176, 255, .8);
+}
+
+.admonition.summary>.admonition-title,
+.admonition.abstract>.admonition-title,
+.admonition.tldr>.admonition-title {
+  background-color: rgba(0, 176, 255, .1);
+  border-bottom-color: rgba(0, 176, 255, .2);
+}
+
+.admonition.summary>.admonition-title:before,
+.admonition.abstract>.admonition-title:before,
+.admonition.tldr>.admonition-title:before {
+  color: rgba(0, 176, 255, 1);
+  ;
+  content: "\E8D2";
+}
+
+.admonition.hint,
+.admonition.tip {
+  border-left-color: rgba(0, 191, 165, .8);
+}
+
+.admonition.hint>.admonition-title,
+.admonition.tip>.admonition-title {
+  background-color: rgba(0, 191, 165, .1);
+  border-bottom-color: rgba(0, 191, 165, .2);
+}
+
+.admonition.hint>.admonition-title:before,
+.admonition.tip>.admonition-title:before {
+  color: rgba(0, 191, 165, 1);
+  content: "\E80E";
+}
+
+.admonition.info,
+.admonition.todo {
+  border-left-color: rgba(0, 184, 212, .8);
+}
+
+.admonition.info>.admonition-title,
+.admonition.todo>.admonition-title {
+  background-color: rgba(0, 184, 212, .1);
+  border-bottom-color: rgba(0, 184, 212, .2);
+}
+
+.admonition.info>.admonition-title:before,
+.admonition.todo>.admonition-title:before {
+  color: rgba(0, 184, 212, 1);
+  ;
+  content: "\E88E";
+}
+
+.admonition.success,
+.admonition.check,
+.admonition.done {
+  border-left-color: rgba(0, 200, 83, .8);
+}
+
+.admonition.success>.admonition-title,
+.admonition.check>.admonition-title,
+.admonition.done>.admonition-title {
+  background-color: rgba(0, 200, 83, .1);
+  border-bottom-color: rgba(0, 200, 83, .2);
+}
+
+.admonition.success>.admonition-title:before,
+.admonition.check>.admonition-title:before,
+.admonition.done>.admonition-title:before {
+  color: rgba(0, 200, 83, 1);
+  ;
+  content: "\E876";
+}
+
+.admonition.question,
+.admonition.help,
+.admonition.faq {
+  border-left-color: rgba(100, 221, 23, .8);
+}
+
+.admonition.question>.admonition-title,
+.admonition.help>.admonition-title,
+.admonition.faq>.admonition-title {
+  background-color: rgba(100, 221, 23, .1);
+  border-bottom-color: rgba(100, 221, 23, .2);
+}
+
+.admonition.question>.admonition-title:before,
+.admonition.help>.admonition-title:before,
+.admonition.faq>.admonition-title:before {
+  color: rgba(100, 221, 23, 1);
+  ;
+  content: "\E887";
+}
+
+.admonition.warning,
+.admonition.attention,
+.admonition.caution {
+  border-left-color: rgba(255, 145, 0, .8);
+}
+
+.admonition.warning>.admonition-title,
+.admonition.attention>.admonition-title,
+.admonition.caution>.admonition-title {
+  background-color: rgba(255, 145, 0, .1);
+  border-bottom-color: rgba(255, 145, 0, .2);
+}
+
+.admonition.attention>.admonition-title:before {
+  color: rgba(255, 145, 0, 1);
+  content: "\E417";
+}
+
+.admonition.warning>.admonition-title:before,
+.admonition.caution>.admonition-title:before {
+  color: rgba(255, 145, 0, 1);
+  content: "\E002";
+}
+
+.admonition.failure,
+.admonition.fail,
+.admonition.missing {
+  border-left-color: rgba(255, 82, 82, .8);
+}
+
+.admonition.failure>.admonition-title,
+.admonition.fail>.admonition-title,
+.admonition.missing>.admonition-title {
+  background-color: rgba(255, 82, 82, .1);
+  border-bottom-color: rgba(255, 82, 82, .2);
+}
+
+.admonition.failure>.admonition-title:before,
+.admonition.fail>.admonition-title:before,
+.admonition.missing>.admonition-title:before {
+  color: rgba(255, 82, 82, 1);
+  ;
+  content: "\E14C";
+}
+
+.admonition.danger,
+.admonition.error,
+.admonition.bug {
+  border-left-color: rgba(255, 23, 68, .8);
+}
+
+.admonition.danger>.admonition-title,
+.admonition.error>.admonition-title,
+.admonition.bug>.admonition-title {
+  background-color: rgba(255, 23, 68, .1);
+  border-bottom-color: rgba(255, 23, 68, .2);
+}
+
+.admonition.danger>.admonition-title:before {
+  color: rgba(255, 23, 68, 1);
+  content: "\E3E7";
+}
+
+.admonition.error>.admonition-title:before {
+  color: rgba(255, 23, 68, 1);
+  content: "\E14C";
+}
+
+.admonition.bug>.admonition-title:before {
+  color: rgba(255, 23, 68, 1);
+  content: "\E868";
+}
+
+.admonition.example,
+.admonition.snippet {
+  border-left-color: rgba(0, 184, 212, .8);
+}
+
+.admonition.example>.admonition-title,
+.admonition.snippet>.admonition-title {
+  background-color: rgba(0, 184, 212, .1);
+  border-bottom-color: rgba(0, 184, 212, .2);
+}
+
+.admonition.example>.admonition-title:before,
+.admonition.snippet>.admonition-title:before {
+  color: rgba(0, 184, 212, 1);
+  ;
+  content: "\E242";
+}
+
+.admonition.quote,
+.admonition.cite {
+  border-left-color: rgba(158, 158, 158, .8);
+}
+
+.admonition.quote>.admonition-title,
+.admonition.cite>.admonition-title {
+  background-color: rgba(158, 158, 158, .1);
+  border-bottom-color: rgba(158, 158, 158, .2);
+}
+
+.admonition.quote>.admonition-title:before,
+.admonition.cite>.admonition-title:before {
+  color: rgba(158, 158, 158, 1);
+  ;
+  content: "\E244";
+}
+.vscode-light kbd,
+.vscode-dark kbd,
+.vscode-high-contrast kbd {
+  display: inline-block;
+  padding: 3px 5px;
+  font: 11px "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  line-height: 10px;
+  vertical-align: middle;
+  border: solid 1px #d1d5da;
+  border-bottom-color: #c6cbd1;
+  border-radius: 3px;
+  box-shadow: inset 0 -1px 0 #c6cbd1;
+}
+
+.vscode-light kbd {
+  color: #444d56;
+  background-color: #fafbfc;
+}
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <h1 id="tp2--persistence-avec-jpa">TP2 : Persistence avec JPA</h1>
+<p><strong>Durée estimée</strong> : 2 × 1h30 = 3h00<br>
+<strong>Niveau</strong> : Intermédiaire<br>
+<strong>Prérequis</strong> : TP1 complété, Cours 3 sur JPA</p>
+<hr>
+<h2 id="-objectifs-du-tp">🎯 Objectifs du TP</h2>
+<p>À l'issue de ce TP, vous serez capable de :</p>
+<ul>
+<li>Créer des entités JPA avec relations complexes</li>
+<li>Utiliser les différents types de relations (@ManyToOne, @OneToMany, @ManyToMany)</li>
+<li>Écrire des requêtes JPQL efficaces</li>
+<li>Optimiser avec JOIN FETCH pour éviter le problème N+1</li>
+<li>Gérer les transactions avec @Transactional</li>
+<li>Tester la couche de persistence</li>
+</ul>
+<hr>
+<h2 id="-contexte">📋 Contexte</h2>
+<p>Vous allez étendre l'API de gestion de produits du TP1 en ajoutant la <strong>persistence réelle avec JPA</strong> et de nouvelles entités pour gérer un système de commandes complet.</p>
+<p><strong>Modèle métier</strong> :</p>
+<ul>
+<li>Un <strong>Product</strong> appartient à une <strong>Category</strong></li>
+<li>Un <strong>Product</strong> est fourni par un <strong>Supplier</strong></li>
+<li>Un <strong>Order</strong> contient plusieurs <strong>OrderItem</strong></li>
+<li>Chaque <strong>OrderItem</strong> référence un <strong>Product</strong> et une quantité</li>
+</ul>
+<hr>
+<h2 id="️-architecture-cible">🏗️ Architecture Cible</h2>
+<pre><code>src/main/java/com/formation/products/
+├── model/
+│   ├── Product.java (@Entity)
+│   ├── Category.java (@Entity)
+│   ├── Supplier.java (@Entity)
+│   ├── Order.java (@Entity)
+│   └── OrderItem.java (@Entity)
+│
+├── repository/
+│   ├── IProductRepository.java (interface)
+│   ├── JpaProductRepository.java (EntityManager)
+│   ├── ICategoryRepository.java
+│   ├── JpaCategoryRepository.java
+│   ├── IOrderRepository.java
+│   └── JpaOrderRepository.java
+│
+├── service/
+│   ├── ProductService.java
+│   ├── CategoryService.java
+│   └── OrderService.java
+│
+└── resource/
+    ├── ProductResource.java
+    ├── CategoryResource.java
+    └── OrderResource.java
+
+src/main/resources/
+└── META-INF/
+    └── persistence.xml
+</code></pre>
+<hr>
+<h2 id="-partie-1--configuration-jpa-20-min">📝 Partie 1 : Configuration JPA (20 min)</h2>
+<h3 id="objectif">Objectif</h3>
+<p>Configurer JPA et PostgreSQL</p>
+<h3 id="11-ajouter-les-dépendances">1.1 Ajouter les Dépendances</h3>
+<p>Dans votre <code>pom.xml</code>, vous avez déjà Jakarta EE. Ajoutez PostgreSQL :</p>
+<pre><code class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.postgresql<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>postgresql<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>42.7.1<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">scope</span>&gt;</span>runtime<span class="hljs-tag">&lt;/<span class="hljs-name">scope</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span>
+</code></pre>
+<h3 id="12-créer-persistencexml">1.2 Créer persistence.xml</h3>
+<p>Créez <code>src/main/resources/META-INF/persistence.xml</code> :</p>
+<p><strong>Consignes</strong> :</p>
+<ul>
+<li>Unité de persistence : <code>productsPU</code></li>
+<li>Type de transaction : <code>JTA</code></li>
+<li>Datasource : <code>java:jboss/datasources/PostgresDS</code></li>
+<li>Propriétés Hibernate :
+<ul>
+<li>Dialecte : PostgreSQL</li>
+<li>Génération schéma : <code>drop-and-create</code> (dev) ou <code>update</code> (prod)</li>
+<li>Afficher SQL : <code>true</code></li>
+<li>Formater SQL : <code>true</code></li>
+</ul>
+</li>
+</ul>
+<p><strong>Indice structure</strong> :</p>
+<pre><code class="language-xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;UTF-8&quot;</span>?&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">persistence</span> <span class="hljs-attr">version</span>=<span class="hljs-string">&quot;3.0&quot;</span> 
+             <span class="hljs-attr">xmlns</span>=<span class="hljs-string">&quot;https://jakarta.ee/xml/ns/persistence&quot;</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">persistence-unit</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;productsPU&quot;</span> <span class="hljs-attr">transaction-type</span>=<span class="hljs-string">&quot;JTA&quot;</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">jta-data-source</span>&gt;</span>java:jboss/datasources/PostgresDS<span class="hljs-tag">&lt;/<span class="hljs-name">jta-data-source</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">properties</span>&gt;</span>
+            <span class="hljs-comment">&lt;!-- Vos propriétés ici --&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">properties</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">persistence-unit</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">persistence</span>&gt;</span>
+</code></pre>
+<h3 id="13-configurer-postgresql-dans-docker">1.3 Configurer PostgreSQL dans Docker</h3>
+<p>Vous avez déjà un <code>docker-compose.yml</code> avec PostgreSQL du TP1.</p>
+<p>Vérifiez qu'il contient :</p>
+<pre><code class="language-yaml"><span class="hljs-attr">postgres:</span>
+  <span class="hljs-attr">image:</span> <span class="hljs-string">postgres:16-alpine</span>
+  <span class="hljs-attr">environment:</span>
+    <span class="hljs-attr">POSTGRES_DB:</span> <span class="hljs-string">productsdb</span>
+    <span class="hljs-attr">POSTGRES_USER:</span> <span class="hljs-string">admin</span>
+    <span class="hljs-attr">POSTGRES_PASSWORD:</span> <span class="hljs-string">admin123</span>
+  <span class="hljs-attr">ports:</span>
+    <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;5432:5432&quot;</span>
+</code></pre>
+<h3 id="14-configurer-wildfly-pour-postgresql">1.4 Configurer WildFly pour PostgreSQL</h3>
+<p>Créez <code>wildfly-postgresql-setup.cli</code> (référez-vous au TP1 BONUS si besoin).</p>
+<p>Le script doit :</p>
+<ol>
+<li>Ajouter le module PostgreSQL</li>
+<li>Déclarer le driver JDBC</li>
+<li>Créer la datasource <code>PostgresDS</code></li>
+</ol>
+<p><strong>Livrable 1</strong> : Capture de WildFly qui démarre avec la datasource configurée</p>
+<hr>
+<h2 id="-partie-2--entités-de-base-30-min">📝 Partie 2 : Entités de Base (30 min)</h2>
+<h3 id="objectif-1">Objectif</h3>
+<p>Créer les entités Product, Category, Supplier avec relations</p>
+<h3 id="21-entité-category">2.1 Entité Category</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Créez <code>Category.java</code> avec :</p>
+<ul>
+<li><code>@Entity</code> et <code>@Table(name = &quot;categories&quot;)</code></li>
+<li>Champs :
+<ul>
+<li><code>id</code> : Long, <code>@Id @GeneratedValue(strategy = IDENTITY)</code></li>
+<li><code>name</code> : String, obligatoire, unique, max 100 caractères</li>
+<li><code>description</code> : String, optionnel, max 500 caractères</li>
+<li><code>products</code> : <code>List&lt;Product&gt;</code>, relation <code>@OneToMany</code></li>
+</ul>
+</li>
+<li>Relation :
+<ul>
+<li><code>@OneToMany(mappedBy = &quot;category&quot;, cascade = CascadeType.ALL, orphanRemoval = true)</code></li>
+</ul>
+</li>
+<li>Méthodes helper pour maintenir la relation bidirectionnelle</li>
+</ul>
+<p><strong>Questions de réflexion</strong> :</p>
+<ul>
+<li>Pourquoi <code>mappedBy = &quot;category&quot;</code> ?</li>
+<li>Que fait <code>orphanRemoval = true</code> ?</li>
+<li>Pourquoi <code>cascade = CascadeType.ALL</code> ?</li>
+</ul>
+<h3 id="22-entité-supplier">2.2 Entité Supplier</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Créez <code>Supplier.java</code> avec :</p>
+<ul>
+<li>Champs :
+<ul>
+<li><code>id</code> : Long</li>
+<li><code>name</code> : String, obligatoire, max 200</li>
+<li><code>email</code> : String, unique</li>
+<li><code>phone</code> : String, optionnel</li>
+<li><code>products</code> : <code>List&lt;Product&gt;</code>, <code>@OneToMany(mappedBy = &quot;supplier&quot;)</code></li>
+</ul>
+</li>
+</ul>
+<p>Pas de cascade ni orphanRemoval ici (pourquoi ?).</p>
+<h3 id="23-entité-product-version-jpa">2.3 Entité Product (Version JPA)</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Modifiez votre <code>Product.java</code> du TP1 pour ajouter les annotations JPA :</p>
+<ul>
+<li>
+<p><code>@Entity</code> et <code>@Table(name = &quot;products&quot;)</code></p>
+</li>
+<li>
+<p>Champs :</p>
+<ul>
+<li><code>id</code> : <code>Long</code> (plus <code>String</code>), <code>@GeneratedValue</code></li>
+<li><code>name</code> : <code>@Column(nullable = false, length = 200)</code></li>
+<li><code>description</code> : <code>@Column(length = 1000)</code></li>
+<li><code>price</code> : <code>@Column(nullable = false, precision = 10, scale = 2)</code></li>
+<li><code>stock</code> : <code>@Column(nullable = false)</code></li>
+<li><code>category</code> : <code>@ManyToOne @JoinColumn(name = &quot;category_id&quot;)</code></li>
+<li><code>supplier</code> : <code>@ManyToOne @JoinColumn(name = &quot;supplier_id&quot;)</code></li>
+<li><code>createdAt</code> : <code>@Column(name = &quot;created_at&quot;)</code></li>
+<li><code>updatedAt</code> : <code>@Column(name = &quot;updated_at&quot;)</code></li>
+</ul>
+</li>
+<li>
+<p>Callbacks :</p>
+<ul>
+<li><code>@PrePersist</code> : initialiser <code>createdAt</code></li>
+<li><code>@PreUpdate</code> : mettre à jour <code>updatedAt</code></li>
+</ul>
+</li>
+</ul>
+<p><strong>Fetch strategies</strong> :</p>
+<ul>
+<li><code>@ManyToOne</code> sur category : que choisir, LAZY ou EAGER ?</li>
+<li><code>@ManyToOne</code> sur supplier : idem ?</li>
+</ul>
+<p><strong>Validation</strong> :</p>
+<ul>
+<li>Conservez les annotations Bean Validation (<code>@NotBlank</code>, <code>@DecimalMin</code>, etc.)</li>
+</ul>
+<h3 id="24-tests-des-entités">2.4 Tests des Entités</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Créez une classe de test ou un endpoint temporaire pour vérifier :</p>
+<ol>
+<li>Créer une Category</li>
+<li>Créer un Supplier</li>
+<li>Créer un Product lié aux deux</li>
+<li>Vérifier en base que les tables sont créées</li>
+<li>Vérifier les clés étrangères</li>
+</ol>
+<p><strong>Outils</strong> :</p>
+<ul>
+<li>Thunder Client pour tester les endpoints</li>
+<li>DBeaver ou psql pour inspecter la base</li>
+<li>Logs Hibernate (show_sql = true)</li>
+</ul>
+<p><strong>Livrable 2</strong> : Captures d'écran des tables créées dans PostgreSQL</p>
+<hr>
+<h2 id="-partie-3--repositories-jpa-30-min">📝 Partie 3 : Repositories JPA (30 min)</h2>
+<h3 id="objectif-2">Objectif</h3>
+<p>Implémenter les repositories avec EntityManager</p>
+<h3 id="31-interface-iproductrepository">3.1 Interface IProductRepository</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Modifiez votre interface du TP1 si nécessaire :</p>
+<pre><code class="language-java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">IProductRepository</span> {
+    Product <span class="hljs-title function_">save</span><span class="hljs-params">(Product product)</span>;
+    Optional&lt;Product&gt; <span class="hljs-title function_">findById</span><span class="hljs-params">(Long id)</span>;  <span class="hljs-comment">// Long, plus String</span>
+    List&lt;Product&gt; <span class="hljs-title function_">findAll</span><span class="hljs-params">()</span>;
+    List&lt;Product&gt; <span class="hljs-title function_">findByCategory</span><span class="hljs-params">(Category category)</span>;
+    List&lt;Product&gt; <span class="hljs-title function_">findBySupplier</span><span class="hljs-params">(Supplier supplier)</span>;
+    List&lt;Product&gt; <span class="hljs-title function_">findByPriceRange</span><span class="hljs-params">(BigDecimal min, BigDecimal max)</span>;
+    List&lt;Product&gt; <span class="hljs-title function_">searchByName</span><span class="hljs-params">(String keyword)</span>;
+    <span class="hljs-keyword">void</span> <span class="hljs-title function_">delete</span><span class="hljs-params">(Long id)</span>;
+    <span class="hljs-type">long</span> <span class="hljs-title function_">count</span><span class="hljs-params">()</span>;
+}
+</code></pre>
+<h3 id="32-implémentation-jpaproductrepository">3.2 Implémentation JpaProductRepository</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Créez <code>JpaProductRepository</code> qui implémente <code>IProductRepository</code> :</p>
+<ul>
+<li>Annotations : <code>@ApplicationScoped</code></li>
+<li>Injection : <code>@PersistenceContext(unitName = &quot;productsPU&quot;) EntityManager em;</code></li>
+</ul>
+<p>Implémentez chaque méthode en utilisant :</p>
+<ul>
+<li><code>em.find()</code> pour findById</li>
+<li><code>em.createQuery()</code> pour les requêtes JPQL</li>
+<li><code>em.persist()</code> et <code>em.merge()</code> pour save</li>
+<li><code>em.remove()</code> pour delete</li>
+</ul>
+<p><strong>Requêtes JPQL à écrire</strong> :</p>
+<pre><code class="language-java"><span class="hljs-comment">// findAll avec JOIN FETCH pour éviter N+1</span>
+<span class="hljs-string">&quot;SELECT p FROM Product p JOIN FETCH p.category LEFT JOIN FETCH p.supplier&quot;</span>
+
+<span class="hljs-comment">// findByCategory</span>
+<span class="hljs-string">&quot;SELECT p FROM Product p WHERE p.category = :category&quot;</span>
+
+<span class="hljs-comment">// findByPriceRange</span>
+<span class="hljs-string">&quot;SELECT p FROM Product p WHERE p.price BETWEEN :min AND :max ORDER BY p.price&quot;</span>
+
+<span class="hljs-comment">// searchByName (LIKE avec %)</span>
+<span class="hljs-string">&quot;SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(:keyword)&quot;</span>
+</code></pre>
+<p><strong>Point crucial</strong> : Utilisez <code>JOIN FETCH</code> dans <code>findAll()</code> pour charger les relations !</p>
+<p><strong>Questions</strong> :</p>
+<ul>
+<li>Pourquoi <code>JOIN FETCH</code> ?</li>
+<li>Que se passe-t-il sans ?</li>
+<li><code>persist()</code> vs <code>merge()</code> : quelle différence ?</li>
+</ul>
+<h3 id="33-repositories-category-et-supplier">3.3 Repositories Category et Supplier</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Créez les interfaces et implémentations pour :</p>
+<ul>
+<li><code>ICategoryRepository</code> / <code>JpaCategoryRepository</code></li>
+<li><code>ISupplierRepository</code> / <code>JpaSupplierRepository</code></li>
+</ul>
+<p>Méthodes minimales :</p>
+<ul>
+<li><code>save()</code></li>
+<li><code>findById()</code></li>
+<li><code>findAll()</code></li>
+<li><code>delete()</code></li>
+</ul>
+<p>Pour Category, ajoutez :</p>
+<ul>
+<li><code>Optional&lt;Category&gt; findByName(String name)</code></li>
+</ul>
+<h3 id="34-tests-des-repositories">3.4 Tests des Repositories</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Testez chaque repository :</p>
+<ol>
+<li>Créer une entité</li>
+<li>La retrouver par ID</li>
+<li>La modifier</li>
+<li>La supprimer</li>
+<li>Vérifier count()</li>
+</ol>
+<p>Observez les logs SQL générés par Hibernate.</p>
+<p><strong>Livrable 3</strong> : Screenshots des logs Hibernate montrant les requêtes SQL</p>
+<hr>
+<h2 id="-partie-4--transactions-et-services-25-min">📝 Partie 4 : Transactions et Services (25 min)</h2>
+<h3 id="objectif-3">Objectif</h3>
+<p>Gérer les transactions proprement avec @Transactional</p>
+<h3 id="41-modifier-productservice">4.1 Modifier ProductService</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Adaptez votre <code>ProductService</code> du TP1 :</p>
+<ul>
+<li>Ajoutez <code>@Transactional</code> sur la classe</li>
+<li>Injectez <code>IProductRepository</code> (interface, pas implémentation)</li>
+<li>Adaptez les types (<code>Long</code> au lieu de <code>String</code>)</li>
+</ul>
+<p><strong>Nouvelles méthodes métier</strong> :</p>
+<pre><code class="language-java"><span class="hljs-meta">@Transactional</span>
+<span class="hljs-keyword">public</span> Product <span class="hljs-title function_">createProductWithCategory</span><span class="hljs-params">(Product product, String categoryName)</span> {
+    <span class="hljs-comment">// 1. Chercher ou créer la category</span>
+    <span class="hljs-comment">// 2. Assigner au product</span>
+    <span class="hljs-comment">// 3. Sauvegarder</span>
+    <span class="hljs-comment">// Tout dans UNE transaction</span>
+}
+
+<span class="hljs-meta">@Transactional</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">updateStock</span><span class="hljs-params">(Long productId, <span class="hljs-type">int</span> quantity)</span> {
+    <span class="hljs-comment">// 1. Charger le product</span>
+    <span class="hljs-comment">// 2. Modifier le stock</span>
+    <span class="hljs-comment">// 3. Sauvegarder (ou flush automatique)</span>
+}
+
+<span class="hljs-meta">@Transactional</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">transferProducts</span><span class="hljs-params">(Long fromCategoryId, Long toCategoryId)</span> {
+    <span class="hljs-comment">// Déplacer tous les products d&#x27;une category vers une autre</span>
+    <span class="hljs-comment">// Transaction atomique : tout ou rien</span>
+}
+</code></pre>
+<p><strong>Questions</strong> :</p>
+<ul>
+<li>Que fait <code>@Transactional</code> exactement ?</li>
+<li>Que se passe-t-il en cas d'exception ?</li>
+<li>Avez-vous besoin d'appeler <code>save()</code> après modification d'une entité managed ?</li>
+</ul>
+<h3 id="42-créer-categoryservice">4.2 Créer CategoryService</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Créez <code>CategoryService</code> avec :</p>
+<ul>
+<li><code>@ApplicationScoped</code></li>
+<li><code>@Transactional</code></li>
+<li>Injection de <code>ICategoryRepository</code></li>
+</ul>
+<p>Méthodes :</p>
+<pre><code class="language-java"><span class="hljs-keyword">public</span> Category <span class="hljs-title function_">createCategory</span><span class="hljs-params">(String name, String description)</span>;
+<span class="hljs-keyword">public</span> List&lt;Category&gt; <span class="hljs-title function_">getAllCategories</span><span class="hljs-params">()</span>;
+<span class="hljs-keyword">public</span> Category <span class="hljs-title function_">getCategoryWithProducts</span><span class="hljs-params">(Long id)</span>;  <span class="hljs-comment">// Avec JOIN FETCH !</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">deleteCategory</span><span class="hljs-params">(Long id)</span>;  <span class="hljs-comment">// Que se passe-t-il pour les products ?</span>
+</code></pre>
+<h3 id="43-tests-de-transactions">4.3 Tests de Transactions</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Testez le comportement transactionnel :</p>
+<ol>
+<li>Créer un product dans une transaction → vérifier en base</li>
+<li>Modifier un product → vérifier que l'UPDATE est automatique</li>
+<li>Lever une exception volontaire → vérifier le rollback</li>
+</ol>
+<p><strong>Test de rollback</strong> :</p>
+<pre><code class="language-java"><span class="hljs-meta">@Transactional</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testRollback</span><span class="hljs-params">()</span> {
+    <span class="hljs-type">Product</span> <span class="hljs-variable">p</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Product</span>(<span class="hljs-comment">/* ... */</span>);
+    productRepository.save(p);
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>(<span class="hljs-string">&quot;Test rollback&quot;</span>);
+    <span class="hljs-comment">// Le product NE doit PAS être en base</span>
+}
+</code></pre>
+<p><strong>Livrable 4</strong> : Démontrer qu'une exception provoque un rollback (screenshot)</p>
+<hr>
+<h2 id="-partie-5--entités-order-et-orderitem-30-min">📝 Partie 5 : Entités Order et OrderItem (30 min)</h2>
+<h3 id="objectif-4">Objectif</h3>
+<p>Créer une relation plus complexe avec entité intermédiaire</p>
+<h3 id="51-entité-order">5.1 Entité Order</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Créez <code>Order.java</code> :</p>
+<ul>
+<li>
+<p>Champs :</p>
+<ul>
+<li><code>id</code> : Long</li>
+<li><code>orderNumber</code> : String, unique, généré automatiquement</li>
+<li><code>customerName</code> : String, obligatoire</li>
+<li><code>customerEmail</code> : String</li>
+<li><code>status</code> : Enum (<code>PENDING</code>, <code>CONFIRMED</code>, <code>SHIPPED</code>, <code>DELIVERED</code>)</li>
+<li><code>totalAmount</code> : BigDecimal (calculé)</li>
+<li><code>orderDate</code> : LocalDateTime</li>
+<li><code>items</code> : <code>List&lt;OrderItem&gt;</code>, <code>@OneToMany(mappedBy = &quot;order&quot;, cascade = ALL, orphanRemoval = true)</code></li>
+</ul>
+</li>
+<li>
+<p>Callbacks :</p>
+<ul>
+<li><code>@PrePersist</code> : générer <code>orderNumber</code>, initialiser <code>orderDate</code>, status = PENDING</li>
+</ul>
+</li>
+</ul>
+<p><strong>Méthodes métier</strong> :</p>
+<pre><code class="language-java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">addItem</span><span class="hljs-params">(OrderItem item)</span> {
+    <span class="hljs-comment">// Ajouter l&#x27;item et maintenir la relation bidirectionnelle</span>
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">removeItem</span><span class="hljs-params">(OrderItem item)</span> {
+    <span class="hljs-comment">// Retirer et maintenir la relation</span>
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">calculateTotal</span><span class="hljs-params">()</span> {
+    <span class="hljs-comment">// Calculer totalAmount = somme de tous les items</span>
+}
+</code></pre>
+<h3 id="52-entité-orderitem">5.2 Entité OrderItem</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Créez <code>OrderItem.java</code> :</p>
+<ul>
+<li>
+<p>Champs :</p>
+<ul>
+<li><code>id</code> : Long</li>
+<li><code>order</code> : <code>@ManyToOne @JoinColumn(name = &quot;order_id&quot;)</code>, nullable = false</li>
+<li><code>product</code> : <code>@ManyToOne @JoinColumn(name = &quot;product_id&quot;)</code>, nullable = false</li>
+<li><code>quantity</code> : int, min = 1</li>
+<li><code>unitPrice</code> : BigDecimal (prix au moment de la commande)</li>
+<li><code>subtotal</code> : BigDecimal (calculé)</li>
+</ul>
+</li>
+<li>
+<p>Callback :</p>
+<ul>
+<li><code>@PrePersist</code>, <code>@PreUpdate</code> : calculer <code>subtotal = quantity * unitPrice</code></li>
+</ul>
+</li>
+</ul>
+<p><strong>Questions</strong> :</p>
+<ul>
+<li>Pourquoi stocker <code>unitPrice</code> au lieu d'utiliser <code>product.getPrice()</code> ?</li>
+<li>Que fait <code>cascade = ALL</code> sur <code>Order.items</code> ?</li>
+<li>Que fait <code>orphanRemoval = true</code> ?</li>
+</ul>
+<h3 id="53-repository-et-service-order">5.3 Repository et Service Order</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Créez :</p>
+<ul>
+<li>
+<p><code>IOrderRepository</code> avec méthodes :</p>
+<ul>
+<li><code>save()</code>, <code>findById()</code>, <code>findAll()</code></li>
+<li><code>findByCustomerEmail(String email)</code></li>
+<li><code>findByStatus(OrderStatus status)</code></li>
+<li><code>findOrdersWithItems()</code> → avec JOIN FETCH !</li>
+</ul>
+</li>
+<li>
+<p><code>OrderService</code> avec méthodes :</p>
+<pre><code class="language-java"><span class="hljs-meta">@Transactional</span>
+<span class="hljs-keyword">public</span> Order <span class="hljs-title function_">createOrder</span><span class="hljs-params">(String customerName, String customerEmail, 
+                         Map&lt;Long, Integer&gt; productsAndQuantities)</span> {
+    <span class="hljs-comment">// 1. Créer l&#x27;order</span>
+    <span class="hljs-comment">// 2. Pour chaque product :</span>
+    <span class="hljs-comment">//    - Charger le product</span>
+    <span class="hljs-comment">//    - Créer un OrderItem</span>
+    <span class="hljs-comment">//    - Ajouter à l&#x27;order</span>
+    <span class="hljs-comment">// 3. Calculer le total</span>
+    <span class="hljs-comment">// 4. Sauvegarder</span>
+}
+
+<span class="hljs-meta">@Transactional</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">updateOrderStatus</span><span class="hljs-params">(Long orderId, OrderStatus newStatus)</span> {
+    <span class="hljs-comment">// Charger l&#x27;order et modifier son status</span>
+}
+</code></pre>
+</li>
+</ul>
+<h3 id="54-tests-des-commandes">5.4 Tests des Commandes</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Testez le scénario complet :</p>
+<ol>
+<li>
+<p>Créer 3 products</p>
+</li>
+<li>
+<p>Créer une commande avec ces 3 products</p>
+</li>
+<li>
+<p>Vérifier que :</p>
+<ul>
+<li>L'order est créé</li>
+<li>Les 3 OrderItems sont créés</li>
+<li>Le totalAmount est correct</li>
+<li>Les relations sont bien mappées en base</li>
+</ul>
+</li>
+<li>
+<p>Modifier la quantité d'un item → vérifier le recalcul</p>
+</li>
+<li>
+<p>Supprimer un item → vérifier qu'il est supprimé (orphanRemoval)</p>
+</li>
+<li>
+<p>Supprimer l'order → vérifier que les items sont aussi supprimés (cascade)</p>
+</li>
+</ol>
+<p><strong>Livrable 5</strong> : Captures montrant les tables orders et order_items remplies</p>
+<hr>
+<h2 id="-partie-6--requêtes-jpql-avancées-25-min">📝 Partie 6 : Requêtes JPQL Avancées (25 min)</h2>
+<h3 id="objectif-5">Objectif</h3>
+<p>Écrire des requêtes complexes et optimisées</p>
+<h3 id="61-requêtes-dagrégation">6.1 Requêtes d'Agrégation</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Ajoutez dans vos repositories :</p>
+<p><strong>ProductRepository</strong> :</p>
+<pre><code class="language-java"><span class="hljs-comment">// Nombre de products par category</span>
+List&lt;Object[]&gt; countByCategory();
+<span class="hljs-comment">// JPQL: &quot;SELECT p.category.name, COUNT(p) FROM Product p GROUP BY p.category&quot;</span>
+
+<span class="hljs-comment">// Prix moyen par category</span>
+List&lt;Object[]&gt; averagePriceByCategory();
+<span class="hljs-comment">// JPQL: &quot;SELECT p.category.name, AVG(p.price) FROM Product p GROUP BY p.category&quot;</span>
+
+<span class="hljs-comment">// Top 10 products les plus chers</span>
+List&lt;Product&gt; <span class="hljs-title function_">findTopExpensive</span><span class="hljs-params">(<span class="hljs-type">int</span> limit)</span>;
+<span class="hljs-comment">// JPQL + setMaxResults()</span>
+</code></pre>
+<p><strong>OrderRepository</strong> :</p>
+<pre><code class="language-java"><span class="hljs-comment">// Chiffre d&#x27;affaires total</span>
+BigDecimal <span class="hljs-title function_">getTotalRevenue</span><span class="hljs-params">()</span>;
+<span class="hljs-comment">// JPQL: &quot;SELECT SUM(o.totalAmount) FROM Order o WHERE o.status = &#x27;DELIVERED&#x27;&quot;</span>
+
+<span class="hljs-comment">// Nombre de commandes par statut</span>
+List&lt;Object[]&gt; countByStatus();
+
+<span class="hljs-comment">// Produits les plus commandés</span>
+List&lt;Object[]&gt; findMostOrderedProducts(<span class="hljs-type">int</span> limit);
+<span class="hljs-comment">// JPQL avec JOIN sur OrderItem et GROUP BY</span>
+</code></pre>
+<h3 id="62-requêtes-avec-sous-requêtes">6.2 Requêtes avec Sous-Requêtes</h3>
+<p><strong>Consignes</strong> :</p>
+<pre><code class="language-java"><span class="hljs-comment">// Products jamais commandés</span>
+List&lt;Product&gt; <span class="hljs-title function_">findNeverOrderedProducts</span><span class="hljs-params">()</span>;
+<span class="hljs-comment">// JPQL: &quot;SELECT p FROM Product p WHERE p NOT IN </span>
+<span class="hljs-comment">//        (SELECT oi.product FROM OrderItem oi)&quot;</span>
+
+<span class="hljs-comment">// Categories avec plus de N products</span>
+List&lt;Category&gt; <span class="hljs-title function_">findCategoriesWithMinProducts</span><span class="hljs-params">(<span class="hljs-type">int</span> minProducts)</span>;
+<span class="hljs-comment">// JPQL avec GROUP BY et HAVING</span>
+</code></pre>
+<h3 id="63-dto-projections">6.3 DTO Projections</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Au lieu de retourner <code>Object[]</code>, créez des DTOs :</p>
+<pre><code class="language-java"><span class="hljs-comment">// DTO</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CategoryStats</span> {
+    <span class="hljs-keyword">private</span> String categoryName;
+    <span class="hljs-keyword">private</span> Long productCount;
+    <span class="hljs-keyword">private</span> BigDecimal averagePrice;
+    
+    <span class="hljs-comment">// Constructeur pour JPQL</span>
+    <span class="hljs-keyword">public</span> <span class="hljs-title function_">CategoryStats</span><span class="hljs-params">(String name, Long count, BigDecimal avg)</span> {
+        <span class="hljs-built_in">this</span>.categoryName = name;
+        <span class="hljs-built_in">this</span>.productCount = count;
+        <span class="hljs-built_in">this</span>.averagePrice = avg;
+    }
+}
+
+<span class="hljs-comment">// Requête JPQL</span>
+<span class="hljs-string">&quot;SELECT NEW com.formation.products.dto.CategoryStats(
+    p.category.name, COUNT(p), AVG(p.price))
+ FROM Product p
+ GROUP BY p.category&quot;</span>
+</code></pre>
+<p>Créez plusieurs DTOs selon vos besoins et utilisez-les dans vos requêtes.</p>
+<p><strong>Livrable 6</strong> : Screenshots de Thunder Client montrant les résultats des requêtes d'agrégation</p>
+<hr>
+<h2 id="-partie-7--optimisation-et-bonnes-pratiques-20-min">📝 Partie 7 : Optimisation et Bonnes Pratiques (20 min)</h2>
+<h3 id="objectif-6">Objectif</h3>
+<p>Éviter les pièges de performance et appliquer les bonnes pratiques</p>
+<h3 id="71-démontrer-le-problème-n1">7.1 Démontrer le Problème N+1</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Créez deux endpoints identiques fonctionnellement mais différents en implémentation :</p>
+<p><strong>Endpoint 1 : Sans optimisation</strong></p>
+<pre><code class="language-java"><span class="hljs-meta">@GET</span>
+<span class="hljs-meta">@Path(&quot;/products/slow&quot;)</span>
+<span class="hljs-keyword">public</span> List&lt;Product&gt; <span class="hljs-title function_">getProductsSlow</span><span class="hljs-params">()</span> {
+    <span class="hljs-keyword">return</span> productService.findAll();  <span class="hljs-comment">// Sans JOIN FETCH</span>
+}
+</code></pre>
+<p><strong>Endpoint 2 : Avec optimisation</strong></p>
+<pre><code class="language-java"><span class="hljs-meta">@GET</span>
+<span class="hljs-meta">@Path(&quot;/products/fast&quot;)</span>
+<span class="hljs-keyword">public</span> List&lt;Product&gt; <span class="hljs-title function_">getProductsFast</span><span class="hljs-params">()</span> {
+    <span class="hljs-keyword">return</span> productService.findAllOptimized();  <span class="hljs-comment">// Avec JOIN FETCH</span>
+}
+</code></pre>
+<p>Observez les logs SQL :</p>
+<ul>
+<li>Endpoint 1 : 1 requête pour products + N requêtes pour categories</li>
+<li>Endpoint 2 : 1 seule requête avec JOIN</li>
+</ul>
+<p><strong>Livrable 7</strong> : Captures des logs montrant la différence (N+1 vs 1 requête)</p>
+<h3 id="72-batch-size">7.2 Batch Size</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Sur une relation <code>@OneToMany</code>, testez l'effet de <code>@BatchSize</code> :</p>
+<pre><code class="language-java"><span class="hljs-meta">@OneToMany(mappedBy = &quot;category&quot;)</span>
+<span class="hljs-meta">@BatchSize(size = 10)</span>
+<span class="hljs-keyword">private</span> List&lt;Product&gt; products;
+</code></pre>
+<p>Cela charge les products par lots de 10 au lieu d'un par un.</p>
+<p>Comparez les logs avec et sans <code>@BatchSize</code>.</p>
+<h3 id="73-fetch-profiles">7.3 Fetch Profiles</h3>
+<p><strong>Consignes</strong> :</p>
+<p>Utilisez <code>@NamedEntityGraph</code> pour définir différents profils de chargement :</p>
+<pre><code class="language-java"><span class="hljs-meta">@Entity</span>
+<span class="hljs-meta">@NamedEntityGraph(
+    name = &quot;Product.withCategory&quot;,
+    attributeNodes = @NamedAttributeNode(&quot;category&quot;)
+)</span>
+<span class="hljs-meta">@NamedEntityGraph(
+    name = &quot;Product.full&quot;,
+    attributeNodes = {
+        @NamedAttributeNode(&quot;category&quot;),
+        @NamedAttributeNode(&quot;supplier&quot;)
+    }
+)</span>
+<span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Product</span> {
+    <span class="hljs-comment">// ...</span>
+}
+</code></pre>
+<p>Utilisez-les dans vos requêtes :</p>
+<pre><code class="language-java">Map&lt;String, Object&gt; hints = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;();
+hints.put(<span class="hljs-string">&quot;jakarta.persistence.fetchgraph&quot;</span>, 
+          em.getEntityGraph(<span class="hljs-string">&quot;Product.full&quot;</span>));
+<span class="hljs-type">Product</span> <span class="hljs-variable">p</span> <span class="hljs-operator">=</span> em.find(Product.class, id, hints);
+</code></pre>
+<hr>
+<h2 id="-livrables-finaux">📦 Livrables Finaux</h2>
+<p>À versionner sur git :</p>
+<h3 id="code-source">Code Source</h3>
+<pre><code>Racine_projet/
+├── src/
+│   ├── main/java/
+│   │   └── com/formation/products/
+│   │       ├── model/ (5 entités)
+│   │       ├── repository/ (6 repositories)
+│   │       ├── service/ (3 services)
+│   │       └── resource/ (3 resources)
+│   └── main/resources/
+│       └── META-INF/persistence.xml
+│
+├── docker-compose.yml
+├── Dockerfile
+├── wildfly-postgresql-setup.cli
+├── pom.xml
+├── README.md
+└── captures/
+    ├── tables-postgresql.png
+    ├── hibernate-logs.png
+    ├── n+1-problem.png
+    ├── requetes-agregation.png
+    └── tests-thunder-client.png
+</code></pre>
+<h3 id="readmemd-requis"><a href="http://README.html">README.md</a> Requis</h3>
+<pre><code class="language-markdown"><span class="hljs-section"># TP2 - Persistence avec JPA</span>
+
+<span class="hljs-section">## Auteur</span>
+[Votre Nom]
+
+<span class="hljs-section">## Description</span>
+API REST avec persistence JPA complète incluant :
+<span class="hljs-bullet">-</span> 5 entités JPA (Product, Category, Supplier, Order, OrderItem)
+<span class="hljs-bullet">-</span> Relations complexes (@ManyToOne, @OneToMany, @ManyToMany)
+<span class="hljs-bullet">-</span> Requêtes JPQL optimisées
+<span class="hljs-bullet">-</span> Transactions gérées
+<span class="hljs-bullet">-</span> Tests complets
+
+<span class="hljs-section">## Modèle de Données</span>
+
+[Schéma des tables et relations]
+
+<span class="hljs-section">## Lancement</span>
+
+[Commande de démarrage]
+
+<span class="hljs-section">## Endpoints</span>
+
+<span class="hljs-section">### Products</span>
+<span class="hljs-bullet">-</span> GET /api/products - Liste optimisée (JOIN FETCH)
+<span class="hljs-bullet">-</span> GET /api/products/{id}
+<span class="hljs-bullet">-</span> POST /api/products
+<span class="hljs-bullet">-</span> PUT /api/products/{id}
+<span class="hljs-bullet">-</span> DELETE /api/products/{id}
+<span class="hljs-bullet">-</span> GET /api/products/category/{catId}
+
+<span class="hljs-section">### Categories</span>
+<span class="hljs-bullet">-</span> [Vos endpoints]
+
+<span class="hljs-section">### Orders</span>
+<span class="hljs-bullet">-</span> [Vos endpoints]
+
+<span class="hljs-section">## Tests Effectués</span>
+
+<span class="hljs-bullet">-</span> [ ] CRUD complet sur toutes les entités
+<span class="hljs-bullet">-</span> [ ] Relations bidirectionnelles fonctionnelles
+<span class="hljs-bullet">-</span> [ ] Transactions avec rollback
+<span class="hljs-bullet">-</span> [ ] Requêtes d&#x27;agrégation
+<span class="hljs-bullet">-</span> [ ] Optimisation N+1
+<span class="hljs-bullet">-</span> [ ] DTOs pour projections
+
+<span class="hljs-section">## Difficultés Rencontrées</span>
+
+[Décrivez les problèmes et comment vous les avez résolus]
+
+<span class="hljs-section">## Points Clés Appris</span>
+
+<span class="hljs-bullet">1.</span> [Point important 1]
+<span class="hljs-bullet">2.</span> [Point important 2]
+<span class="hljs-bullet">3.</span> [Point important 3]
+</code></pre>
+<h2 id="-conseils">💡 Conseils</h2>
+<h3 id="pendant-le-tp">Pendant le TP</h3>
+<ol>
+<li><strong>Commencez simple</strong> : Product et Category d'abord</li>
+<li><strong>Testez immédiatement</strong> : Chaque entité → test → vérif base</li>
+<li><strong>Observez les logs SQL</strong> : Activez show_sql dès le début</li>
+<li><strong>Testez les relations</strong> : Les deux côtés doivent être cohérents</li>
+<li><strong>Utilisez Thunder Client</strong> : Testez chaque endpoint</li>
+</ol>
+<h3 id="debugging">Debugging</h3>
+<p><strong>Problème</strong> : LazyInitializationException
+→ Utilisez JOIN FETCH ou @Transactional</p>
+<p><strong>Problème</strong> : Table non créée
+→ Vérifiez persistence.xml et les logs de démarrage</p>
+<p><strong>Problème</strong> : Relation non sauvegardée
+→ Vérifiez le côté propriétaire et mappedBy</p>
+<p><strong>Problème</strong> : N requêtes au lieu d'une
+→ Ajoutez JOIN FETCH dans la requête JPQL</p>
+<h3 id="ressources">Ressources</h3>
+<ul>
+<li><a href="https://jakarta.ee/specifications/persistence/">Jakarta Persistence Specification</a></li>
+<li><a href="https://hibernate.org/orm/documentation/">Hibernate User Guide</a></li>
+<li><a href="https://docs.oracle.com/javaee/7/tutorial/persistence-querylanguage.htm">JPQL Reference</a></li>
+</ul>
+<hr>
+<h2 id="-ce-que-vous-allez-apprendre">🎯 Ce que Vous Allez Apprendre</h2>
+<p>En faisant ce TP, vous comprendrez :</p>
+<p>✅ Comment mapper des objets vers des tables SQL<br>
+✅ Comment gérer des relations complexes<br>
+✅ Comment écrire des requêtes JPQL efficaces<br>
+✅ Comment éviter les pièges de performance (N+1)<br>
+✅ Comment gérer les transactions proprement<br>
+✅ Les bonnes pratiques JPA en production</p>
+<p><strong>Bon courage ! 🚀</strong></p>
+<hr>
+<!--
+
+## ✅ Critères d'Évaluation (sur 20)
+
+| Critère | Points | Détails |
+|---------|--------|---------|
+| **Entités JPA** | 4 | Annotations correctes, relations bien définies |
+| **Repositories** | 3 | EntityManager utilisé correctement, JPQL |
+| **JOIN FETCH** | 2 | Optimisation N+1 démontrée |
+| **Transactions** | 2 | @Transactional utilisé, rollback testé |
+| **Requêtes JPQL** | 3 | Agrégation, sous-requêtes, DTOs |
+| **Order/OrderItem** | 3 | Entités complexes fonctionnelles |
+| **Tests et démos** | 2 | Captures d'écran pertinentes |
+| **Qualité code** | 1 | Clean, organisé, commenté |
+| **TOTAL** | **20** | |
+
+-->
+
+            
+            
+        </body>
+        </html>
