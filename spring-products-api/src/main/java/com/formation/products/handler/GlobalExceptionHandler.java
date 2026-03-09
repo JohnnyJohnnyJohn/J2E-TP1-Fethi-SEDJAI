@@ -1,12 +1,21 @@
 package com.formation.products.handler;
 
-import com.formation.products.exception.*;
+import com.formation.products.exception.CategoryNotEmptyException;
+import com.formation.products.exception.CategoryNotFoundException;
+import com.formation.products.exception.DuplicateProductException;
+import com.formation.products.exception.ErrorResponse;
+import com.formation.products.exception.FieldError;
+import com.formation.products.exception.InsufficientStockException;
+import com.formation.products.exception.ProductNotFoundException;
+import com.formation.products.exception.SupplierNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,6 +26,10 @@ import java.util.List;
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final String BAD_REQUEST = "Bad Request";
+    private static final String NOT_FOUND = "Not Found";
+    private static final String CONFLICT = "Conflict";
+    private static final String UNAUTHORIZED = "Unauthorized";
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(
@@ -28,7 +41,7 @@ public class GlobalExceptionHandler {
                 .map(e -> new FieldError(e.getField(), e.getDefaultMessage(), e.getRejectedValue()))
                 .toList();
 
-        ErrorResponse errorResponse = new ErrorResponse(400, "Bad Request", "Validation failed");
+        ErrorResponse errorResponse = new ErrorResponse(400, BAD_REQUEST, "Validation failed");
         errorResponse.setPath(request.getRequestURI());
         errorResponse.setErrors(errors);
 
@@ -38,7 +51,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleProductNotFound(
             ProductNotFoundException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(404, "Not Found", ex.getMessage());
+        ErrorResponse error = new ErrorResponse(404, NOT_FOUND, ex.getMessage());
         error.setPath(request.getRequestURI());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
@@ -46,7 +59,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CategoryNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleCategoryNotFound(
             CategoryNotFoundException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(404, "Not Found", ex.getMessage());
+        ErrorResponse error = new ErrorResponse(404, NOT_FOUND, ex.getMessage());
+        error.setPath(request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(SupplierNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleSupplierNotFound(
+            SupplierNotFoundException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(404, NOT_FOUND, ex.getMessage());
         error.setPath(request.getRequestURI());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
@@ -54,7 +75,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateProductException.class)
     public ResponseEntity<ErrorResponse> handleConflict(
             DuplicateProductException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(409, "Conflict", ex.getMessage());
+        ErrorResponse error = new ErrorResponse(409, CONFLICT, ex.getMessage());
         error.setPath(request.getRequestURI());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
@@ -62,7 +83,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CategoryNotEmptyException.class)
     public ResponseEntity<ErrorResponse> handleCategoryNotEmpty(
             CategoryNotEmptyException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(409, "Conflict", ex.getMessage());
+        ErrorResponse error = new ErrorResponse(409, CONFLICT, ex.getMessage());
         error.setPath(request.getRequestURI());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
@@ -70,7 +91,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InsufficientStockException.class)
     public ResponseEntity<ErrorResponse> handleInsufficientStock(
             InsufficientStockException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(400, "Bad Request", ex.getMessage());
+        ErrorResponse error = new ErrorResponse(400, BAD_REQUEST, ex.getMessage());
         error.setPath(request.getRequestURI());
         return ResponseEntity.badRequest().body(error);
     }
@@ -87,17 +108,33 @@ public class GlobalExceptionHandler {
                         v.getInvalidValue()))
                 .toList();
 
-        ErrorResponse errorResponse = new ErrorResponse(400, "Bad Request", "Validation failed");
+        ErrorResponse errorResponse = new ErrorResponse(400, BAD_REQUEST, "Validation failed");
         errorResponse.setPath(request.getRequestURI());
         errorResponse.setErrors(errors);
 
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentials(
+            BadCredentialsException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(401, UNAUTHORIZED, "Identifiants invalides");
+        error.setPath(request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthentication(
+            AuthenticationException ex, HttpServletRequest request) {
+        ErrorResponse error = new ErrorResponse(401, UNAUTHORIZED, "Authentication échouée");
+        error.setPath(request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument(
             IllegalArgumentException ex, HttpServletRequest request) {
-        ErrorResponse error = new ErrorResponse(400, "Bad Request", ex.getMessage());
+        ErrorResponse error = new ErrorResponse(400, BAD_REQUEST, ex.getMessage());
         error.setPath(request.getRequestURI());
         return ResponseEntity.badRequest().body(error);
     }

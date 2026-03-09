@@ -3,6 +3,8 @@ package com.formation.products.controller;
 import com.formation.products.exception.CategoryNotFoundException;
 import com.formation.products.model.Category;
 import com.formation.products.service.CategoryService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -14,7 +16,9 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/api/v1/categories")
+@Tag(name = "Categories", description = "Category CRUD endpoints")
+@SecurityRequirement(name = "bearerAuth")
 public class CategoryController {
 
     private final CategoryService categoryService;

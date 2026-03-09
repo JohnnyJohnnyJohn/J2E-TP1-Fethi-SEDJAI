@@ -3,6 +3,8 @@ package com.formation.products.controller;
 import com.formation.products.model.Order;
 import com.formation.products.model.OrderStatus;
 import com.formation.products.service.OrderService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -18,7 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api/v1/orders")
+@Tag(name = "Orders", description = "Order creation and status management")
+@SecurityRequirement(name = "bearerAuth")
 public class OrderController {
 
     private final OrderService orderService;
@@ -32,21 +36,21 @@ public class OrderController {
             @RequestParam(required = false) String customerEmail,
             @RequestParam(required = false) OrderStatus status) {
         if (customerEmail != null) {
-            return ResponseEntity.ok(orderService.getByCustomerEmail(customerEmail));
+            return ResponseEntity.ok(orderService.getOrdersByCustomerEmail(customerEmail));
         }
         if (status != null) {
-            return ResponseEntity.ok(orderService.getByStatus(status));
+            return ResponseEntity.ok(orderService.getOrdersByStatus(status));
         }
-        return ResponseEntity.ok(orderService.getAll());
+        return ResponseEntity.ok(orderService.getAllOrders());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getOrder(@PathVariable Long id) {
-        return ResponseEntity.ok(orderService.getById(id));
+    public ResponseEntity<Order> getOrder(@PathVariable Long id) {
+        return ResponseEntity.ok(orderService.getOrderById(id));
     }
 
     @PostMapping
-    public ResponseEntity<?> createOrder(@Valid @RequestBody CreateOrderRequest request) {
+    public ResponseEntity<Order> createOrder(@Valid @RequestBody CreateOrderRequest request) {
         Order created = orderService.createOrder(
                 request.getCustomerName(),
                 request.getCustomerEmail(),
@@ -61,10 +65,10 @@ public class OrderController {
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<?> updateStatus(@PathVariable Long id,
+    public ResponseEntity<Order> updateStatus(@PathVariable Long id,
                                           @RequestBody UpdateStatusRequest request) {
         orderService.updateOrderStatus(id, request.getStatus());
-        return ResponseEntity.ok(orderService.getById(id));
+        return ResponseEntity.ok(orderService.getOrderById(id));
     }
 
     public static class CreateOrderRequest {

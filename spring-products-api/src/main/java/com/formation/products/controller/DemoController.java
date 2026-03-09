@@ -7,6 +7,8 @@ import com.formation.products.repository.CategoryRepository;
 import com.formation.products.repository.ProductRepository;
 import com.formation.products.repository.SupplierRepository;
 import com.formation.products.service.ProductService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,16 +23,21 @@ import java.util.Map;
 
 /**
  * Temporary controller for TP2 demos.
- * - POST /api/demo/seed: create Category, Supplier, Product (find-or-create).
+ * - POST /api/v1/demo/seed: create Category, Supplier, Product (find-or-create).
  * Verify tables + FK in DB.
- * - POST /api/demo/rollback: save a product then throw → transaction rollback,
+ * - POST /api/v1/demo/rollback: save a product then throw → transaction rollback,
  * nothing persisted.
- * - POST /api/demo/test-repositories: consigne 3.4 — create → findById → modify
+ * - POST /api/v1/demo/test-repositories: consigne 3.4 — create → findById → modify
  * → delete → count for each repo (observe SQL in logs).
  */
 @RestController
-@RequestMapping("/api/demo")
+@RequestMapping("/api/v1/demo")
+@Tag(name = "Demo", description = "Seed and demo endpoints for testing")
+@SecurityRequirement(name = "bearerAuth")
 public class DemoController {
+
+        private static final String ELECTRONICS_CATEGORY_NAME = "Électronique";
+        private static final String COUNT_AFTER_SEPARATOR = " after=";
 
         private final ProductService productService;
         private final CategoryRepository categoryRepository;
@@ -48,19 +55,16 @@ public class DemoController {
         }
 
         @PostMapping("/seed")
-        public ResponseEntity<Map<String, Object>> seed() {
-                // 1. Find or create Category
-                Category category = categoryRepository.findByName("Électronique")
+        public ResponseEntity<Map<String, Object>> seedDemoData() {
+                Category category = categoryRepository.findByName(ELECTRONICS_CATEGORY_NAME)
                                 .orElseGet(() -> categoryRepository
-                                                .save(new Category("Électronique", "Produits électroniques")));
+                                                .save(new Category(ELECTRONICS_CATEGORY_NAME, "Produits électroniques")));
 
-                // 2. Find or create Supplier
                 String supplierEmail = "contact@techfournisseur.fr";
                 Supplier supplier = supplierRepository.findByEmail(supplierEmail)
                                 .orElseGet(() -> supplierRepository
                                                 .save(new Supplier("TechFournisseur", supplierEmail, "+33123456789")));
 
-                // 3. Create Product linked to both, then save
                 Product product = new Product(
                                 "Ordinateur portable",
                                 "PC 15 pouces, 16 Go RAM",
@@ -97,54 +101,52 @@ public class DemoController {
                 Map<String, Object> report = new LinkedHashMap<>();
                 List<String> steps = new ArrayList<>();
 
-                // ---- CategoryRepository ----
                 long countCatBefore = categoryRepository.count();
-                Category cat = categoryRepository.save(new Category("TestCategory_3.4", "Pour test repos"));
-                steps.add("Category: created id=" + cat.getId());
-                Category catFound = categoryRepository.findById(cat.getId()).orElseThrow();
+                Category createdCategory = categoryRepository.save(new Category("TestCategory_3.4", "Pour test repos"));
+                steps.add("Category: created id=" + createdCategory.getId());
+                Category foundCategory = categoryRepository.findById(createdCategory.getId()).orElseThrow();
                 steps.add("Category: findById ok");
-                catFound.setDescription("Description modifiée");
-                categoryRepository.save(catFound);
+                foundCategory.setDescription("Description modifiée");
+                categoryRepository.save(foundCategory);
                 steps.add("Category: updated");
-                categoryRepository.deleteById(cat.getId());
+                categoryRepository.deleteById(createdCategory.getId());
                 steps.add("Category: deleted");
                 long countCatAfter = categoryRepository.count();
-                steps.add("Category: count before=" + countCatBefore + " after=" + countCatAfter);
+                steps.add("Category: count before=" + countCatBefore + COUNT_AFTER_SEPARATOR + countCatAfter);
 
-                // ---- SupplierRepository ----
                 long countSupBefore = supplierRepository.count();
-                Supplier sup = supplierRepository.save(new Supplier("TestSupplier 3.4", "test-3.4@repo.demo", null));
-                steps.add("Supplier: created id=" + sup.getId());
-                Supplier supFound = supplierRepository.findById(sup.getId()).orElseThrow();
+                Supplier createdSupplier = supplierRepository
+                                .save(new Supplier("TestSupplier 3.4", "test-3.4@repo.demo", null));
+                steps.add("Supplier: created id=" + createdSupplier.getId());
+                Supplier foundSupplier = supplierRepository.findById(createdSupplier.getId()).orElseThrow();
                 steps.add("Supplier: findById ok");
-                supFound.setPhone("+33000000000");
-                supplierRepository.save(supFound);
+                foundSupplier.setPhone("+33000000000");
+                supplierRepository.save(foundSupplier);
                 steps.add("Supplier: updated");
-                supplierRepository.deleteById(sup.getId());
+                supplierRepository.deleteById(createdSupplier.getId());
                 steps.add("Supplier: deleted");
                 long countSupAfter = supplierRepository.count();
-                steps.add("Supplier: count before=" + countSupBefore + " after=" + countSupAfter);
+                steps.add("Supplier: count before=" + countSupBefore + COUNT_AFTER_SEPARATOR + countSupAfter);
 
-                // ---- ProductRepository (use existing category/supplier from seed) ----
-                Category existingCat = categoryRepository.findByName("Électronique").orElse(null);
+                Category existingCat = categoryRepository.findByName(ELECTRONICS_CATEGORY_NAME).orElse(null);
                 Supplier existingSup = supplierRepository.findByEmail("contact@techfournisseur.fr").orElse(null);
                 if (existingCat != null && existingSup != null) {
                         long countProdBefore = productRepository.count();
-                        Product prod = new Product("Produit test 3.4", "Desc", new BigDecimal("1.00"), existingCat,
+                        Product createdProduct = new Product("Produit test 3.4", "Desc", new BigDecimal("1.00"), existingCat,
                                         existingSup, 1);
-                        prod = productRepository.save(prod);
-                        steps.add("Product: created id=" + prod.getId());
-                        Product prodFound = productRepository.findById(prod.getId()).orElseThrow();
+                        createdProduct = productRepository.save(createdProduct);
+                        steps.add("Product: created id=" + createdProduct.getId());
+                        Product foundProduct = productRepository.findById(createdProduct.getId()).orElseThrow();
                         steps.add("Product: findById ok");
-                        prodFound.setStock(99);
-                        productRepository.save(prodFound);
+                        foundProduct.setStock(99);
+                        productRepository.save(foundProduct);
                         steps.add("Product: updated");
-                        productRepository.deleteById(prod.getId());
+                        productRepository.deleteById(createdProduct.getId());
                         steps.add("Product: deleted");
                         long countProdAfter = productRepository.count();
-                        steps.add("Product: count before=" + countProdBefore + " after=" + countProdAfter);
+                        steps.add("Product: count before=" + countProdBefore + COUNT_AFTER_SEPARATOR + countProdAfter);
                 } else {
-                        steps.add("Product: skipped (run /api/demo/seed first to have category and supplier)");
+                        steps.add("Product: skipped (run /api/v1/demo/seed first to have category and supplier)");
                 }
 
                 report.put("steps", steps);

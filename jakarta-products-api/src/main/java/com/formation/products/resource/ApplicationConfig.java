@@ -1,8 +1,0 @@
-package com.formation.products.resource;
-
-import jakarta.ws.rs.ApplicationPath;
-import jakarta.ws.rs.core.Application;
-
-@ApplicationPath("/api")
-public class ApplicationConfig extends Application {
-}

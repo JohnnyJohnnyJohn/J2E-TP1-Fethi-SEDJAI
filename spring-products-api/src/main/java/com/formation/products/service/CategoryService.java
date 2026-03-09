@@ -56,6 +56,10 @@ public class CategoryService {
         return categoryRepository.save(existing);
     }
 
+    /**
+     * Deletes a category only when it is empty.
+     * Throws a business exception when products are still attached.
+     */
     @Transactional
     public void deleteCategory(Long id) {
         Category category = categoryRepository.findById(id)

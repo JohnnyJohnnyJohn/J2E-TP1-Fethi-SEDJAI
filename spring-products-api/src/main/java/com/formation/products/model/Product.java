@@ -52,6 +52,7 @@ public class Product {
     @Column(unique = true, length = 10)
     private String sku;
 
+    @NotNull(message = "La catégorie est obligatoire")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
@@ -83,15 +84,15 @@ public class Product {
     public Product(String name, BigDecimal price, Category category) {
         this.name = name;
         this.price = price;
-        this.category = category;
+        setCategory(category);
     }
 
     public Product(String name, String description, BigDecimal price, Category category, Supplier supplier, int stock) {
         this.name = name;
         this.description = description;
         this.price = price;
-        this.category = category;
-        this.supplier = supplier;
+        setCategory(category);
+        setSupplier(supplier);
         this.stock = stock;
     }
 
@@ -140,7 +141,18 @@ public class Product {
     }
 
     public void setCategory(Category category) {
+        if (this.category == category) {
+            return;
+        }
+        Category previousCategory = this.category;
         this.category = category;
+
+        if (previousCategory != null) {
+            previousCategory.removeProductInternal(this);
+        }
+        if (category != null) {
+            category.addProductInternal(this);
+        }
     }
 
     public Supplier getSupplier() {
@@ -148,7 +160,18 @@ public class Product {
     }
 
     public void setSupplier(Supplier supplier) {
+        if (this.supplier == supplier) {
+            return;
+        }
+        Supplier previousSupplier = this.supplier;
         this.supplier = supplier;
+
+        if (previousSupplier != null) {
+            previousSupplier.removeProductInternal(this);
+        }
+        if (supplier != null) {
+            supplier.addProductInternal(this);
+        }
     }
 
     public String getSku() {

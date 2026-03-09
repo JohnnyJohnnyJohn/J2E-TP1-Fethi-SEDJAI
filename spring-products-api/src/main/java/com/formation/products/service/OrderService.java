@@ -25,6 +25,11 @@ public class OrderService {
         this.productRepository = productRepository;
     }
 
+    /**
+     * Creates an order from a map of product IDs to quantities.
+     * Each product is resolved from the database, transformed into an OrderItem, then
+     * the order total is computed before persistence.
+     */
     @Transactional
     public Order createOrder(String customerName,
                              String customerEmail,
@@ -59,7 +64,6 @@ public class OrderService {
             item.setProduct(product);
             item.setQuantity(quantity);
             item.setUnitPrice(product.getPrice() != null ? product.getPrice() : BigDecimal.ZERO);
-            // subtotal will be computed by @PrePersist
             order.addItem(item);
         }
 
@@ -76,24 +80,24 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public List<Order> getAll() {
-        return orderRepository.findAll();
+    public List<Order> getAllOrders() {
+        return orderRepository.findAllWithDetails();
     }
 
     @Transactional(readOnly = true)
-    public Order getById(Long id) {
-        return orderRepository.findById(id)
+    public Order getOrderById(Long id) {
+        return orderRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found with id " + id));
     }
 
     @Transactional(readOnly = true)
-    public List<Order> getByCustomerEmail(String email) {
-        return orderRepository.findByCustomerEmail(email);
+    public List<Order> getOrdersByCustomerEmail(String email) {
+        return orderRepository.findByCustomerEmailWithDetails(email);
     }
 
     @Transactional(readOnly = true)
-    public List<Order> getByStatus(OrderStatus status) {
-        return orderRepository.findByStatus(status);
+    public List<Order> getOrdersByStatus(OrderStatus status) {
+        return orderRepository.findByStatusWithDetails(status);
     }
 }
 

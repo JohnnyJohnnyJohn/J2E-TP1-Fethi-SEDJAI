@@ -6,6 +6,8 @@ import com.formation.products.dto.OrderStatusCount;
 import com.formation.products.model.Category;
 import com.formation.products.model.Product;
 import com.formation.products.service.StatsService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,8 +22,15 @@ import java.util.Map;
  * Part 6 – JPQL aggregation endpoints for Thunder Client / Livrable 6.
  */
 @RestController
-@RequestMapping("/api/stats")
+@RequestMapping("/api/v1/stats")
+@Tag(name = "Statistics", description = "Advanced JPQL aggregation and reporting endpoints")
+@SecurityRequirement(name = "bearerAuth")
 public class StatsController {
+
+    private static final String KEY_ID = "id";
+    private static final String KEY_NAME = "name";
+    private static final String KEY_PRICE = "price";
+    private static final String KEY_CATEGORY_NAME = "categoryName";
 
     private final StatsService statsService;
 
@@ -35,10 +44,10 @@ public class StatsController {
         List<Object[]> rows = statsService.getCountByCategory();
         List<Map<String, Object>> result = rows.stream()
                 .map(row -> {
-                    Map<String, Object> m = new LinkedHashMap<>();
-                    m.put("categoryName", row[0]);
-                    m.put("productCount", row[1]);
-                    return m;
+                    Map<String, Object> mappedRow = new LinkedHashMap<>();
+                    mappedRow.put(KEY_CATEGORY_NAME, row[0]);
+                    mappedRow.put("productCount", row[1]);
+                    return mappedRow;
                 })
                 .toList();
         return ResponseEntity.ok(result);
@@ -50,10 +59,10 @@ public class StatsController {
         List<Object[]> rows = statsService.getAveragePriceByCategory();
         List<Map<String, Object>> result = rows.stream()
                 .map(row -> {
-                    Map<String, Object> m = new LinkedHashMap<>();
-                    m.put("categoryName", row[0]);
-                    m.put("averagePrice", row[1]);
-                    return m;
+                    Map<String, Object> mappedRow = new LinkedHashMap<>();
+                    mappedRow.put(KEY_CATEGORY_NAME, row[0]);
+                    mappedRow.put("averagePrice", row[1]);
+                    return mappedRow;
                 })
                 .toList();
         return ResponseEntity.ok(result);
@@ -71,13 +80,13 @@ public class StatsController {
             @RequestParam(defaultValue = "10") int limit) {
         List<Product> products = statsService.getTopExpensive(limit);
         List<Map<String, Object>> result = products.stream()
-                .map(p -> {
-                    Map<String, Object> m = new LinkedHashMap<>();
-                    m.put("id", p.getId());
-                    m.put("name", p.getName());
-                    m.put("price", p.getPrice());
-                    m.put("category", p.getCategory() != null ? p.getCategory().getName() : null);
-                    return m;
+                .map(product -> {
+                    Map<String, Object> mappedProduct = new LinkedHashMap<>();
+                    mappedProduct.put(KEY_ID, product.getId());
+                    mappedProduct.put(KEY_NAME, product.getName());
+                    mappedProduct.put(KEY_PRICE, product.getPrice());
+                    mappedProduct.put("category", product.getCategory() != null ? product.getCategory().getName() : null);
+                    return mappedProduct;
                 })
                 .toList();
         return ResponseEntity.ok(result);
@@ -88,12 +97,12 @@ public class StatsController {
     public ResponseEntity<List<Map<String, Object>>> neverOrderedProducts() {
         List<Product> products = statsService.getNeverOrderedProducts();
         List<Map<String, Object>> result = products.stream()
-                .map(p -> {
-                    Map<String, Object> m = new LinkedHashMap<>();
-                    m.put("id", p.getId());
-                    m.put("name", p.getName());
-                    m.put("price", p.getPrice());
-                    return m;
+                .map(product -> {
+                    Map<String, Object> mappedProduct = new LinkedHashMap<>();
+                    mappedProduct.put(KEY_ID, product.getId());
+                    mappedProduct.put(KEY_NAME, product.getName());
+                    mappedProduct.put(KEY_PRICE, product.getPrice());
+                    return mappedProduct;
                 })
                 .toList();
         return ResponseEntity.ok(result);
@@ -105,11 +114,11 @@ public class StatsController {
             @RequestParam(defaultValue = "1") int min) {
         List<Category> categories = statsService.getCategoriesWithMinProducts(min);
         List<Map<String, Object>> result = categories.stream()
-                .map(c -> {
-                    Map<String, Object> m = new LinkedHashMap<>();
-                    m.put("id", c.getId());
-                    m.put("name", c.getName());
-                    return m;
+                .map(category -> {
+                    Map<String, Object> mappedCategory = new LinkedHashMap<>();
+                    mappedCategory.put(KEY_ID, category.getId());
+                    mappedCategory.put(KEY_NAME, category.getName());
+                    return mappedCategory;
                 })
                 .toList();
         return ResponseEntity.ok(result);

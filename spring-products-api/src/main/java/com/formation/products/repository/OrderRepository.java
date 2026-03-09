@@ -5,7 +5,6 @@ import com.formation.products.dto.OrderStatusCount;
 import com.formation.products.model.Order;
 import com.formation.products.model.OrderStatus;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,21 +12,52 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    List<Order> findByCustomerEmail(String customerEmail);
+    @Query("""
+            SELECT DISTINCT o FROM Order o
+            LEFT JOIN FETCH o.items i
+            LEFT JOIN FETCH i.product p
+            LEFT JOIN FETCH p.category
+            LEFT JOIN FETCH p.supplier
+            WHERE o.customerEmail = :customerEmail
+            ORDER BY o.id DESC
+            """)
+    List<Order> findByCustomerEmailWithDetails(@Param("customerEmail") String customerEmail);
 
-    List<Order> findByStatus(OrderStatus status);
+    @Query("""
+            SELECT DISTINCT o FROM Order o
+            LEFT JOIN FETCH o.items i
+            LEFT JOIN FETCH i.product p
+            LEFT JOIN FETCH p.category
+            LEFT JOIN FETCH p.supplier
+            WHERE o.status = :status
+            ORDER BY o.id DESC
+            """)
+    List<Order> findByStatusWithDetails(@Param("status") OrderStatus status);
 
-    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.items i LEFT JOIN FETCH i.product")
-    List<Order> findOrdersWithItems();
+    @Query("""
+            SELECT DISTINCT o FROM Order o
+            LEFT JOIN FETCH o.items i
+            LEFT JOIN FETCH i.product p
+            LEFT JOIN FETCH p.category
+            LEFT JOIN FETCH p.supplier
+            ORDER BY o.id DESC
+            """)
+    List<Order> findAllWithDetails();
 
-    @EntityGraph(attributePaths = {"items", "items.product"})
-    List<Order> findAll();
-
-    // --- Part 6: Aggregation ---
+    @Query("""
+            SELECT DISTINCT o FROM Order o
+            LEFT JOIN FETCH o.items i
+            LEFT JOIN FETCH i.product p
+            LEFT JOIN FETCH p.category
+            LEFT JOIN FETCH p.supplier
+            WHERE o.id = :id
+            """)
+    Optional<Order> findByIdWithDetails(@Param("id") Long id);
 
     @Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.status = :status")
     BigDecimal getTotalRevenueByStatus(@Param("status") OrderStatus status);

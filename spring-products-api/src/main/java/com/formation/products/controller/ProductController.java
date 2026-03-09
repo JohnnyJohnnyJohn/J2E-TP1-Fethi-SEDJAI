@@ -3,8 +3,10 @@ package com.formation.products.controller;
 import com.formation.products.exception.ProductNotFoundException;
 import com.formation.products.model.Product;
 import com.formation.products.service.ProductService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -13,7 +15,9 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/api/v1/products")
+@Tag(name = "Products", description = "Product CRUD, stock and optimization endpoints")
+@SecurityRequirement(name = "bearerAuth")
 public class ProductController {
 
     private final ProductService productService;
@@ -22,10 +26,23 @@ public class ProductController {
         this.productService = productService;
     }
 
+    /**
+     * Returns products with optional filtering by category and optional pagination.
+     * If page/size is provided, a paginated payload is returned; otherwise a plain list.
+     */
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts(
+    public ResponseEntity<Object> getAllProducts(
             @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) String category) {
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+
+        if (page != null || size != null) {
+            int resolvedPage = page != null ? page : 0;
+            int resolvedSize = size != null ? size : 10;
+            Page<Product> productsPage = productService.getAllProducts(resolvedPage, resolvedSize);
+            return ResponseEntity.ok(productsPage);
+        }
 
         List<Product> products;
         if (categoryId != null) {

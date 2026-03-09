@@ -56,6 +56,10 @@ public class StatsService {
         return productRepository.findCategoryStats();
     }
 
+    /**
+     * Returns total delivered-order revenue.
+     * Null aggregate results are normalized to zero for stable API responses.
+     */
     @Transactional(readOnly = true)
     public BigDecimal getTotalRevenue() {
         BigDecimal sum = orderRepository.getTotalRevenueByStatus(OrderStatus.DELIVERED);

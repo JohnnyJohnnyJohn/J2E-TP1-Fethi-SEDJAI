@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.BatchSize;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "categories")
@@ -27,7 +28,7 @@ public class Category {
     @Column(length = 500)
     private String description;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     @BatchSize(size = 10)
     private List<Product> products = new ArrayList<>();
 
@@ -40,13 +41,29 @@ public class Category {
     }
 
     public void addProduct(Product product) {
-        products.add(product);
+        Objects.requireNonNull(product, "product must not be null");
         product.setCategory(this);
     }
 
     public void removeProduct(Product product) {
+        if (product == null) {
+            return;
+        }
+        if (product.getCategory() == this) {
+            product.setCategory(null);
+        } else {
+            products.remove(product);
+        }
+    }
+
+    void addProductInternal(Product product) {
+        if (!products.contains(product)) {
+            products.add(product);
+        }
+    }
+
+    void removeProductInternal(Product product) {
         products.remove(product);
-        product.setCategory(null);
     }
 
     public Long getId() {
@@ -79,6 +96,17 @@ public class Category {
     }
 
     public void setProducts(List<Product> products) {
-        this.products = products;
+        for (Product current : new ArrayList<>(this.products)) {
+            current.setCategory(null);
+        }
+        this.products = new ArrayList<>();
+        if (products == null) {
+            return;
+        }
+        for (Product product : products) {
+            if (product != null) {
+                product.setCategory(this);
+            }
+        }
     }
 }

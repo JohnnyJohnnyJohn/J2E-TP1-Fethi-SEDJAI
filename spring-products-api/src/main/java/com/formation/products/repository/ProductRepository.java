@@ -4,6 +4,7 @@ import com.formation.products.dto.CategoryStats;
 import com.formation.products.model.Category;
 import com.formation.products.model.Product;
 import com.formation.products.model.Supplier;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,6 +25,15 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p LEFT JOIN FETCH p.category LEFT JOIN FETCH p.supplier ORDER BY p.createdAt DESC")
     List<Product> findAllWithCategoryAndSupplier();
 
+    @Query("SELECT p FROM Product p LEFT JOIN FETCH p.category LEFT JOIN FETCH p.supplier WHERE p.category.id = :categoryId ORDER BY p.createdAt DESC")
+    List<Product> findByCategoryIdWithCategoryAndSupplier(@Param("categoryId") Long categoryId);
+
+    @Query("SELECT p FROM Product p LEFT JOIN FETCH p.category LEFT JOIN FETCH p.supplier WHERE p.category = :category ORDER BY p.createdAt DESC")
+    List<Product> findByCategoryWithCategoryAndSupplier(@Param("category") Category category);
+
+    @EntityGraph(value = "Product.full")
+    Page<Product> findAll(Pageable pageable);
+
     List<Product> findByCategory(Category category);
 
     List<Product> findByCategoryId(Long categoryId);
@@ -35,8 +45,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT p FROM Product p LEFT JOIN FETCH p.category LEFT JOIN FETCH p.supplier WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Product> searchByName(@Param("keyword") String keyword);
-
-    // --- Part 6: Aggregation ---
 
     @Query("SELECT p.category.name, COUNT(p) FROM Product p GROUP BY p.category")
     List<Object[]> countByCategory();
@@ -53,8 +61,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT NEW com.formation.products.dto.CategoryStats(p.category.name, COUNT(p), AVG(p.price)) FROM Product p GROUP BY p.category")
     List<CategoryStats> findCategoryStats();
 
-    // --- Part 7: N+1 demo (slow = no fetch, fast = JOIN FETCH already above) ---
-
     @Query("SELECT p FROM Product p")
     List<Product> findAllSlow();
 
@@ -66,5 +72,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p")
     List<Product> findAllWithFullGraph();
 
-    boolean existsBySku(String sku);
+    @Query("SELECT COUNT(p) > 0 FROM Product p WHERE p.sku = :sku")
+    boolean existsBySku(@Param("sku") String sku);
+
+    @Query("SELECT COUNT(p) > 0 FROM Product p WHERE p.sku = :sku AND p.id <> :id")
+    boolean existsBySkuAndIdNot(@Param("sku") String sku, @Param("id") Long id);
 }
